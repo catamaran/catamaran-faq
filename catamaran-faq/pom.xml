@@ -1,0 +1,182 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.catamarancode.faq</groupId>
+  <artifactId>catamaran-faq</artifactId>
+  <packaging>war</packaging>
+  <version>1.0</version>
+  <name>Catamaran FAQ Management Web Application</name>
+  <url>http://maven.apache.org</url>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.catamarancode</groupId>
+      <artifactId>catamaran-mvc</artifactId>
+      <version>1.0</version>
+    </dependency>
+	
+    <dependency>
+      <groupId>org.catamarancode</groupId>
+      <artifactId>catamaran-core</artifactId>
+      <version>1.1</version>
+    </dependency>
+	
+	<dependency>
+      <groupId>org.catamarancode</groupId>
+      <artifactId>catamaran-solr</artifactId>
+      <version>1.0</version>
+    </dependency>
+	
+	<dependency>
+      <groupId>org.catamarancode</groupId>
+      <artifactId>catamaran-tomc</artifactId>
+      <version>1.1</version>
+	  <!-- jar should be manually copied to tomcat/lib -->
+	  <scope>provided</scope>
+    </dependency>
+	
+	<dependency>
+		<groupId>org.freemarker</groupId>
+		<artifactId>freemarker</artifactId>
+		<version>2.3.16</version>
+	</dependency>
+	
+	<dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <version>2.3</version>
+	  <classifier>jdk15</classifier>
+    </dependency>	
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+      	<artifactId>slf4j-api</artifactId>
+      	<version>1.5.8</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.5.8</version>
+    </dependency>	
+	<dependency>
+		<groupId>commons-lang</groupId>
+		<artifactId>commons-lang</artifactId>
+		<version>2.1</version>
+	</dependency>
+	<dependency>
+		<groupId>commons-logging</groupId>
+		<artifactId>commons-logging</artifactId>
+		<version>1.1</version>
+	</dependency>
+	<dependency>
+		<groupId>commons-codec</groupId>
+		<artifactId>commons-codec</artifactId>
+		<version>1.3</version>
+	</dependency>
+	<dependency>
+		<groupId>commons-io</groupId>
+		<artifactId>commons-io</artifactId>
+		<version>1.4</version>
+	</dependency>
+	
+	
+		<!-- begin hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>3.6.7.Final</version>
+			<!-- version>3.3.0.GA</version -->
+			<!-- version>3.5.6-Final</version -->
+		</dependency>
+		<!-- dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-annotations</artifactId>
+			<version>3.3.0.GA</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-commons-annotations</artifactId>
+			<version>3.2.0.Final</version>
+		</dependency -->
+		<dependency>
+			<groupId>javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.12.1.GA</version>
+		</dependency>
+		<dependency>
+			<groupId>c3p0</groupId> 
+			<artifactId>c3p0</artifactId> 
+			<version>0.9.1</version> 
+		</dependency>
+        <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+          <version>5.1.6-bin</version>
+        </dependency>
+
+		<!-- end hibernate -->	
+		
+	<!-- Begin: Spring Framework and required dependencies -->
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-core</artifactId>
+		<version>3.0.5.RELEASE</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-orm</artifactId>
+		<version>3.0.5.RELEASE</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-webmvc</artifactId>
+		<version>3.0.5.RELEASE</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-context-support</artifactId>
+		<version>3.0.5.RELEASE</version>
+	</dependency>
+	
+	<!-- End: Spring Framework and required dependencies -->
+		
+	<dependency>
+		<groupId>servletapi</groupId>
+		<artifactId>servletapi</artifactId>
+		<version>2.4</version>
+		<scope>provided</scope>
+	</dependency>
+	
+  </dependencies>
+
+  <build>
+    <plugins>
+	  <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-compiler-plugin</artifactId>
+	    <version>2.0.2</version>
+	    <configuration>
+	      <source>1.6</source>
+	      <target>1.6</target>
+	    </configuration>
+	  </plugin>
+	  <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-war-plugin</artifactId>
+		<version>2.0</version>
+		<configuration>
+		   <webappDirectory>${basedir}/target/${artifactId}</webappDirectory>
+		   <warName>ir</warName>
+		</configuration>
+	  </plugin>		  
+	</plugins>
+  </build>
+
+</project>

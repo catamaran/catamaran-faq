@@ -1,0 +1,28 @@
+#leftCol {
+	width: 65%;
+	display:inline-block;
+}
+
+#rightCol {
+	width: 33%;
+	display:inline-block;
+	vertical-align: top;
+}
+
+ul {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+	/*
+	padding: 0.5em;
+	margin: 0.5em; */
+}
+
+ul#level1 {
+	padding: 0px;
+	margin: 0px;
+}
+
+.answerBox p {
+	margin-left: 0.9em;
+}

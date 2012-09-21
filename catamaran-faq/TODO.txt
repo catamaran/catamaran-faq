@@ -1,0 +1,3 @@
+- attachments
+- admin login
+- comments / discussion thread
