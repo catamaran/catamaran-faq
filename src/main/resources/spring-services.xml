@@ -16,7 +16,7 @@
 	<!-- Location of property file(s) -->
     <property name="locations">
         <list>
-            <value>file:///catamaran/servers/catamaran-faq/conf/application.properties</value>
+            <value>file:///catamaran/apps/catamaran-faq/conf/application.properties</value>
         </list>
     </property>
 </bean>

@@ -167,15 +167,6 @@
 	      <target>1.6</target>
 	    </configuration>
 	  </plugin>
-	  <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-war-plugin</artifactId>
-		<version>2.0</version>
-		<configuration>
-		   <webappDirectory>${basedir}/target/${artifactId}</webappDirectory>
-		   <warName>ir</warName>
-		</configuration>
-	  </plugin>		  
 	</plugins>
   </build>
 
