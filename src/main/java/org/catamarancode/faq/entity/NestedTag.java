@@ -5,10 +5,13 @@ import java.util.List;
 
 import org.catamarancode.util.CollectionUtils;
 
-public class Category {
+/* A tag with multiple levels - e.g. programming|java|persistence
+ * 
+ */
+public class NestedTag {
     
     /**
-     * category taxonomy strings (i.e. "development|java|spring|mail"
+     * tag element strings (i.e. "development|java|spring|mail"
      */
     private List<String> elements = new ArrayList<String>();
     
@@ -16,14 +19,22 @@ public class Category {
         return CollectionUtils.toString(elements, "|");        
     }
     
-    public static Category createFromPipeSeparatedString(String pipeSeparatedTag) {
-        Category tag = new Category();
+    public String getPipeSeparated() {
+    	return asPipeSeparatedString();
+    }
+    
+    public String getColonSeparated() {
+    	return CollectionUtils.toString(elements, " : ");
+    }
+    
+    public static NestedTag createFromPipeSeparatedString(String pipeSeparatedTag) {
+        NestedTag tag = new NestedTag();
         tag.setFromPipeSeparatedString(pipeSeparatedTag);
         return tag;
     }
     
-    public static Category createFromStringList(List<String> strings) {
-        Category tag = new Category();
+    public static NestedTag createFromStringList(List<String> strings) {
+        NestedTag tag = new NestedTag();
         tag.setFromStringList(strings);
         return tag;
     }

@@ -34,7 +34,7 @@
 						<li id="${faq.shortId}" class="faq">
 							<a class="toggle" name="${faq.shortId}" nohref>+</a> <a href="faq?key=${faq.key}">${faq.question}</a>
 							<ul class="tags">
-								<#if (faq.tags?size > 0)>(</#if><#list faq.tags as tag><li><a href="index?tag=${tag.name}">${tag.name}</a><#if tag_has_next>, </#if></li></#list><#if (faq.tags?size > 0)>)</#if>
+								<#if (faq.nestedTagsAsList?size > 0)>(</#if><#list faq.nestedTagsAsList as tag><li><a href="index?tag=${tag.name}">${tag.name}</a><#if tag_has_next>, </#if></li></#list><#if (faq.tags?size > 0)>)</#if>
 							</ul>
 							<div class="answerBox"></div>
 						</li>

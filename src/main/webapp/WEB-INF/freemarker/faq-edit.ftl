@@ -25,36 +25,82 @@
 		<form action="faq-edit" method="post">
 	        <div>					
 		        <label>Question</label>
-		        <input type="text" size="100" name="question" value="${(faq.question)!}" />
+		        <input type="text" size="100" tabindex=1 name="question" value="${(faq.question)!}" />
 			</div>
 	        <div>					
 		        <label>Answer</label>
-		        <textarea rows="14" cols="72" name="answer">${(faq.answer)!}</textarea>
-		        <!-- input type="text" name="answer" value="" / -->
+		        <textarea rows="14" cols="72" tabindex=1 name="answer">${(faq.answer)!}</textarea>
 			</div>
-			<div>					
-		        <label>Category</label>
-		        <input type="text" size="40" name="category" id="categoryAutocomplete" value="${(faq.category)!}" />
-			</div>
-			<div>					
-		        <label>Tag #1</label>
-		        <input type="text" size="40" name="tag1" class="tagAutocomplete" value="${(faq.tag1)!}" />
-			</div>
-			<div>					
-		        <label>Tag #2</label>
-		        <input type="text" size="40" name="tag2" class="tagAutocomplete" value="${(faq.tag2)!}" />
-			</div>
-			<div>					
-		        <label>Tag #3</label>
-		        <input type="text" size="40" name="tag3" class="tagAutocomplete" value="${(faq.tag3)!}" />
-			</div>
-			
+			<table>
+			<tr>
+                <th><label>Tag #1</label></th>
+                <th><label>Tag #2</label></th>
+                <th><label>Tag #3</label></th>
+                <th><label>Tag #4</label></th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" size="40" tabindex=11 name="tag11" class="tagX1 tag" id="tag11" value="${(faq.tag11)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=21 name="tag21" class="tagX1 tag" id="tag21" value="${(faq.tag21)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=31 name="tag31" class="tagX1 tag" id="tag31" value="${(faq.tag31)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=41 name="tag41" class="tagX1 tag" id="tag41" value="${(faq.tag41)!}" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" size="40" tabindex=12 name="tag12" class="tagX2 tag" id="tag12" value="${(faq.tag12)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=22 name="tag22" class="tagX2 tag" id="tag22" value="${(faq.tag22)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=32 name="tag32" class="tagX2 tag" id="tag32" value="${(faq.tag32)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=42 name="tag42" class="tagX2 tag" id="tag42" value="${(faq.tag42)!}" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" size="40" tabindex=13 name="tag13" class="tagX3 tag" id="tag13" value="${(faq.tag13)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=23 name="tag23" class="tagX3 tag" id="tag23" value="${(faq.tag23)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=33 name="tag33" class="tagX3 tag" id="tag33" value="${(faq.tag33)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=43 name="tag43" class="tagX3 tag" id="tag43" value="${(faq.tag43)!}" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" size="40" tabindex=14 name="tag14" class="tagX4 tag" id="tag14" value="${(faq.tag14)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=24 name="tag24" class="tagX4 tag" id="tag24" value="${(faq.tag24)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=34 name="tag34" class="tagX4 tag" id="tag34" value="${(faq.tag34)!}" />
+                </td>
+                <td>
+                    <input type="text" size="40" tabindex=44 name="tag44" class="tagX4 tag" id="tag44" value="${(faq.tag44)!}" />
+                </td>
+            </tr>
+            </table>                                                            			     
 			<#if faq??>
 				<input type="hidden" name="key" value="${(faq.key)!}" />
 			</#if>
 			<div>					
 		        <label></label>
-		        <input type="submit" value="Save" />
+		        <input type="submit" tabindex=99 value="Save" />
 			</div>
 			
 		</form>

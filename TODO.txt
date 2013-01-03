@@ -1,3 +1,6 @@
 - attachments
 - admin login
 - comments / discussion thread
+- revision history audit
+- multiple nested tags instead of category/tags
+- markdown

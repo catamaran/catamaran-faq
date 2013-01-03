@@ -23,12 +23,7 @@ public class Faq {
     private String ownerKey;
     private String shortId; // Used for html links etc
     private Name ownerName;
-    private Category category;
-    
-    /**
-     * Pipe-separated tag strings (i.e. "development|java|spring|mail")
-     */
-    private List<Tag> tags = new ArrayList<Tag>();
+    private NestedTag[] nestedTags = new NestedTag[4];
     
     private static SolrService solrService;
     
@@ -56,18 +51,20 @@ public class Faq {
             this.ownerName = Name.createFromFullNameString(ownerNameStr);    
         }        
 
-        List tagStrings = (List) doc.getFieldValues("tag");
-        if (tagStrings != null) {
-            for (int i = 0; i < tagStrings.size(); i++) {
-                Tag tag = new Tag();
-                tag.setName((String) tagStrings.get(i));
-                this.tags.add(tag);
-            }
-        }
-        
-        List categoryStrings = (List) doc.getFieldValues("category");
-        if (categoryStrings != null) {
-            this.setCategory(Category.createFromStringList(categoryStrings));
+        for (int i = 0; i < nestedTags.length; i++) {        	
+        	for (int j = 0; j < 4; j++) {
+        		String value = (String) doc.getFieldValue("tag-" + (i+1) + "-" + (j+1));
+        		boolean hasValue = StringUtils.hasText(value);
+        		if (j == 0 && hasValue) {
+        			this.nestedTags[i] = new NestedTag();
+        		} 
+        		if (this.nestedTags[i] == null && hasValue) {
+        			throw new RuntimeException("Bad solr data, a field like 'tag-2-1' was populated while 'tag-1-1' was null.");
+        		}
+        		if (hasValue) {
+        			this.nestedTags[i].addElement(value);	
+        		}        		
+        	}
         }
     }
 
@@ -82,14 +79,14 @@ public class Faq {
         inputDoc.addField("owner-key", this.getOwnerKey());
         inputDoc.addField("owner-name", this.getOwnerName());
         
-        if (this.category != null) {
-            for (String s : this.category.getElements()) {
-                inputDoc.addField("category", s);
-            }
-        }
-
-        for (Tag tag : tags) {
-            inputDoc.addField("tag", tag.getName());
+        for (int i = 0; i < this.nestedTags.length; i++) {
+        	int j = 0;
+        	if (this.nestedTags[i] != null) {
+	        	for (String s : this.nestedTags[i].getElements()) {
+	        		inputDoc.addField("tag-" + (i+1) + "-" + (j+1), s);
+	        		j++;
+	        	}
+        	}
         }
 
         // Default field for all solr docs of this type/class
@@ -155,39 +152,6 @@ public class Faq {
     public void setAnswer(String answer) {
         this.answer = answer;
     }
-
-    public List<Tag> getTags() {
-        return tags;
-    }
-    
-    public Tag getTag1() {
-        if (!tags.isEmpty()) {
-            return tags.get(0);
-        }
-        return null;
-    }
-    
-    public Tag getTag2() {
-        if (tags.size() > 1) {
-            return tags.get(1);
-        }
-        return null;
-    }
-    
-    public Tag getTag3() {
-        if (tags.size() > 2) {
-            return tags.get(2);
-        }
-        return null;
-    }
-    
-    public void addTag(String tag) {
-        this.tags.add(Tag.createFromString(tag));
-    }
-    
-    public void clearTags() {
-        this.tags = new ArrayList<Tag>();
-    }
     
     public String getContextId() {
         return contextId;
@@ -213,16 +177,82 @@ public class Faq {
         this.ownerName = ownerName;
     }
 
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
     public String getShortId() {
         return shortId;
     }
+
+	public NestedTag[] getNestedTags() {
+		return nestedTags;
+	}
+	
+	public List<NestedTag> getNestedTagsAsList() {
+		List<NestedTag> tagList = new ArrayList<NestedTag>();
+		for (int i = 0; i < nestedTags.length; i++) {
+			if (nestedTags[i] != null) {
+				tagList.add(nestedTags[i]);	
+			}			
+		}
+		return tagList;
+	}
+	
+	public String getTag11() {
+		return getTagValue(0,0);
+	}
+	public String getTag12() {
+		return getTagValue(0,1);
+	}
+	public String getTag13() {
+		return getTagValue(0,2);
+	}
+	public String getTag14() {
+		return getTagValue(0,3);
+	}
+	public String getTag21() {
+		return getTagValue(1,0);
+	}
+	public String getTag22() {
+		return getTagValue(1,1);
+	}
+	public String getTag23() {
+		return getTagValue(1,2);
+	}
+	public String getTag24() {
+		return getTagValue(1,3);
+	}
+	public String getTag31() {
+		return getTagValue(2,0);
+	}
+	public String getTag32() {
+		return getTagValue(2,1);
+	}
+	public String getTag33() {
+		return getTagValue(2,2);
+	}
+	public String getTag34() {
+		return getTagValue(2,3);
+	}
+	public String getTag41() {
+		return getTagValue(3,0);
+	}
+	public String getTag42() {
+		return getTagValue(3,1);
+	}
+	public String getTag43() {
+		return getTagValue(3,2);
+	}
+	public String getTag44() {
+		return getTagValue(3,3);
+	}
+	
+	private String getTagValue(int i, int j) {
+		NestedTag tag = this.nestedTags[i];
+		if (tag == null) {
+			return null;			
+		}
+		if (tag.getElements().size() > j) {
+			return tag.getElements().get(j);
+		}
+		return null;
+	}
 
 }

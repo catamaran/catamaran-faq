@@ -11,9 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.catamarancode.faq.entity.Category;
 import org.catamarancode.faq.entity.Faq;
-import org.catamarancode.faq.entity.Tag;
+import org.catamarancode.faq.entity.NestedTag;
 import org.catamarancode.faq.entity.User;
 import org.catamarancode.faq.service.solr.SolrService;
 import org.catamarancode.faq.web.support.CategoryNode;
@@ -73,14 +72,14 @@ public class MainController {
         // NOTE: We limit ourselves to 4 levels deep (to avoid headache of recursion)
         CategoryNode top = new CategoryNode();
         for (Faq faq : faqs) {
-            Category category = faq.getCategory();
+            NestedTag tag = faq.getNestedTags()[0];
             CategoryNode currentNode = null;
-            if (category != null) {
-                for (int i = 0; i < category.getElements().size(); i++) {
+            if (tag != null) {
+                for (int i = 0; i < tag.getElements().size(); i++) {
                     if (i == 0) {
                         currentNode = top;                    
                     }
-                    currentNode = currentNode.getOrCreateChild(category.getElements().get(i));                
+                    currentNode = currentNode.getOrCreateChild(tag.getElements().get(i));                
                 }
                 
                 // Add the FAQ itself
@@ -110,17 +109,14 @@ public class MainController {
         Set<String> keywords = new HashSet<String>();
         for (Faq faq : faqs) {
             
-            if (faq.getCategory() != null) {
-            for (String term : faq.getCategory().getElements()) {
-                keywords.add(term);    
-            }
-            }
-            
-            if (faq.getTags() != null) {
-                for (Tag tag : faq.getTags()) {
-                    keywords.add(tag.getName());
-                }
-            }            
+        	for (int i = 0; i < faq.getNestedTags().length; i++) {
+        		NestedTag tag = faq.getNestedTags()[i];
+        		if (tag != null) {
+            		for (String term : tag.getElements()) {
+       	                keywords.add(term);    
+       	            }
+        		}
+        	}
         }
         
         List<String> list = new ArrayList<String>(keywords);
@@ -193,10 +189,6 @@ public class MainController {
         // POST
         String question = request.getParameter("question");
         String answer = request.getParameter("answer");
-        String tag1 = request.getParameter("tag1");
-        String tag2 = request.getParameter("tag2");
-        String tag3 = request.getParameter("tag3");
-        String category = request.getParameter("category");
         
         Faq faq = null;
         if (StringUtils.hasText(faqId)) {
@@ -211,24 +203,27 @@ public class MainController {
             faq.setOwnerKey(user.getKey());
             faq.setOwnerName(user.getName());
         }
-        
+
         // tags
-        faq.clearTags();
-        if (StringUtils.hasText(tag1)) {
-            faq.addTag(tag1);    
-        }
-        if (StringUtils.hasText(tag2)) {
-            faq.addTag(tag2);
-        }
-        if (StringUtils.hasText(tag3)) {
-            faq.addTag(tag3);
-        }
-        
-        // category
-        if (StringUtils.hasText(category)) {
-            faq.setCategory(Category.createFromPipeSeparatedString(category));
-        } else {
-            // faq.setCategory(null);
+        for (int i=0; i < faq.getNestedTags().length; i++) {
+        	NestedTag currentTag = null;
+        	for (int j=0; j < 4; j++) {
+        		String tagName = "tag" + (i+1) + (j+1);
+        		String value = request.getParameter(tagName);
+        		boolean hasValue = StringUtils.hasText(value);
+        		
+        		// Overwrite an existing tag?
+        		if (j == 0 && hasValue) {
+        			currentTag = new NestedTag();
+        			faq.getNestedTags()[i] = currentTag;
+        		}
+        		
+        		if (hasValue && currentTag != null) {
+        			currentTag.addElement(value);
+        		} else if (hasValue) {
+        			throw new IllegalArgumentException("Missing top value for tag " + (i+1));
+        		}
+        	}
         }
         
         this.solrService.save(faq);

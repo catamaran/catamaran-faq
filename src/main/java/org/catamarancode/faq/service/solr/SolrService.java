@@ -1,25 +1,19 @@
 package org.catamarancode.faq.service.solr;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.catamarancode.faq.entity.Faq;
-import org.catamarancode.faq.entity.Tag;
 import org.catamarancode.faq.entity.User;
 import org.catamarancode.solr.SearchQuery;
-import org.springframework.util.StringUtils;
 
 public interface SolrService {
 
-    List<Tag> listTags();
+    /*List<Tag> listTags();*/
     
+	List<Faq> searchByNestedTag(int nestedLevel, String term);
+	
     Faq loadFaq(String id);
     
     User loadUser(String id);

@@ -6,16 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.catamarancode.faq.entity.Faq;
-import org.catamarancode.faq.entity.Tag;
 import org.catamarancode.faq.entity.User;
 import org.catamarancode.solr.SearchQuery;
 import org.catamarancode.solr.SolrServerConfig;
@@ -49,6 +47,7 @@ public class SolrServiceImpl implements SolrService {
         return this.searchFaq(null);
     }
 
+    /*
     public List<Tag> listTags() {
         SearchQuery searchQuery = new SearchQuery("document-type:FAQ");
         searchQuery.setRows(0l);
@@ -68,6 +67,7 @@ public class SolrServiceImpl implements SolrService {
         }
         return tags;
     }
+    */
 
     public Faq loadFaq(String id) {
         
@@ -122,6 +122,23 @@ public class SolrServiceImpl implements SolrService {
         // Search
         QueryResponse queryResponse = this.search(modifiedQuery, facetFields, rows, startRow);
         return extractFaqs(queryResponse);
+    }
+    
+    /**
+     * @param nestedLevel 1-base tag nested level where 1 is the top tag element
+     */
+    public List<Faq> searchByNestedTag(int nestedLevel, String term) {
+    	
+        String query1 = null;
+        if (StringUtils.hasText(term)) {
+        	query1 = String.format("tag-1-%d:%s* tag-2-%d:%s* tag-3-%d:%s* tag-4-%d:%s*", nestedLevel, term, nestedLevel, term, nestedLevel, term, nestedLevel, term);
+        } else {
+        	query1 = String.format("tag-1-%d:[* TO *] tag-2-%d:[* TO *] tag-3-%d:[* TO *] tag-4-%d:[* TO *]", nestedLevel, nestedLevel, nestedLevel, nestedLevel);
+        }
+        
+        QueryResponse queryResponse = this.search(query1);
+        List<Faq> faqs = this.extractFaqs(queryResponse);
+        return faqs;
     }
     
     public List<Faq> extractFaqs(QueryResponse queryResponse) {

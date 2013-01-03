@@ -27,10 +27,12 @@
 		</#if>
 		<div class="faq">		
 	        ${faq.question}
-	        <ul class="tags">
-				<#if (faq.tags?size > 0)>(</#if><#list faq.tags as tag><li><a href="index?tag=${tag.name}">${tag.name}</a><#if tag_has_next>, </#if></li></#list><#if (faq.tags?size > 0)>)</#if>
+            <div class="answerBox"><p>${faq.answer}<p></div>
+            Tagged as: <ul class="tags" style="list-style:none">	           
+                <#list faq.nestedTagsAsList as tag><li style="">
+                    <a href="index?tag=${tag.pipeSeparated}">${tag.colonSeparated}</a>
+			    </#list>
 			</ul>
-       		<div class="answerBox"><p>${faq.answer}<p></div>
         </div>
         <br/>
         <a href="faq-edit?key=${faq.key}">edit</a>

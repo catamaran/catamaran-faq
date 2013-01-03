@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# IMPORTANT: You must allow symlinks within your Tomcat webapps for this script to work.  
+# Edit TOMCAT_HOME/conf/context.xml and change <Context> to <Context allowLinking="true">
+
 # Your java project name. Defaults to current directory name if not set here.
 PROJECT_NAME=
 
@@ -87,6 +90,23 @@ if [ "$COMMAND" == "start" ]; then
   exit 0  
 fi
 
+# branch on command input
+if [ "$COMMAND" == "run" ]; then
+  cd $LOCAL_TOMCAT_BIN_DIR
+  ./catalina.sh run
+  echo "CATAMARAN manage.sh: Finished command $COMMAND" 
+  exit 0  
+fi
+
+# branch on command input
+if [ "$COMMAND" == "rerun" ]; then
+  $CURRENT_DIR/manage.sh build  
+  $CURRENT_DIR/manage.sh run 
+  
+  echo "CATAMARAN manage.sh: Finished command $COMMAND" 
+  exit 0  
+fi
+
 if [ "$COMMAND" == "stop" ]; then
   cd $LOCAL_TOMCAT_BIN_DIR
   ./catalina.sh stop
@@ -109,14 +129,11 @@ if [ "$COMMAND" == "build" ]; then
   # Performs a maven webapp build BUT replaces static web content with symlinks to the source files
   # so that local file changes appear immediately
 
-  # First remove old symlinks
+  # First remove old symlinks to static web content
   if [ -f $LOCAL_WEBAPP_DIR ]; then
-    echo "CATAMARAN Removing symlinks from: $LOCAL_WEBAPP_DIR .."
+    echo "CATAMARAN Removing /static symlink from: $LOCAL_WEBAPP_DIR .."
     rm $LOCAL_WEBAPP_DIR/WEB-INF/freemarker 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/css 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/js 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/img 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/assets 2> /dev/null
+    rm $LOCAL_WEBAPP_DIR/static 2> /dev/null
   fi  
 
   # Then build which will move files from src/ to target/
@@ -126,25 +143,23 @@ if [ "$COMMAND" == "build" ]; then
   # Remove newly copied static files from target/
   echo "CATAMARAN Removing web files from: $LOCAL_WEBAPP_DIR .."
   rm -r $LOCAL_WEBAPP_DIR/WEB-INF/freemarker 2> /dev/null
-  rm -r $LOCAL_WEBAPP_DIR/css 2> /dev/null
-  rm -r $LOCAL_WEBAPP_DIR/js 2> /dev/null
-  rm -r $LOCAL_WEBAPP_DIR/img 2> /dev/null
-  rm -r $LOCAL_WEBAPP_DIR/assets 2> /dev/null
+  rm -r $LOCAL_WEBAPP_DIR/static 2> /dev/null
 
   # Re-create the symlinks back to static files in the /src tree
   echo "CATAMARAN Creating symlinks to $PROJECT_HOME/src/main/webapp files inside $LOCAL_WEBAPP_DIR .."
   cd $LOCAL_WEBAPP_DIR/WEB-INF/
   ln -s $PROJECT_HOME/src/main/webapp/WEB-INF/freemarker/ freemarker
   cd $LOCAL_WEBAPP_DIR
-  ln -s $PROJECT_HOME/src/main/webapp/css/ css
-  ln -s $PROJECT_HOME/src/main/webapp/js/ js
-  ln -s $PROJECT_HOME/src/main/webapp/img img
-  ln -s $PROJECT_HOME/src/main/webapp/assets assets
+  ln -s $PROJECT_HOME/src/main/webapp/static/ static
 
   # Create a symlink in tomcat/webapps back to project's target directory
-  echo "CATAMARAN Creating symlink from $LOCAL_TOMCAT_WEBAPPS_DIR/$LOCAL_WEBAPP_NAME to $LOCAL_WEBAPP_DIR .."
-  cd $LOCAL_TOMCAT_WEBAPPS_DIR
-  ln -s $LOCAL_WEBAPP_DIR $LOCAL_WEBAPP_NAME
+  if [ ! -L $LOCAL_TOMCAT_WEBAPPS_DIR/$LOCAL_WEBAPP_NAME ]; then
+    echo "CATAMARAN Creating symlink from $LOCAL_TOMCAT_WEBAPPS_DIR/$LOCAL_WEBAPP_NAME to $LOCAL_WEBAPP_DIR .."
+    cd $LOCAL_TOMCAT_WEBAPPS_DIR
+    ln -s $LOCAL_WEBAPP_DIR $LOCAL_WEBAPP_NAME
+  else 
+    echo "CATAMARAN Symlink from $LOCAL_TOMCAT_WEBAPPS_DIR/$LOCAL_WEBAPP_NAME to $LOCAL_WEBAPP_DIR already exists."
+  fi
   echo "CATAMARAN manage.sh: Finished command $COMMAND" 
   exit 0  
 fi
@@ -156,14 +171,17 @@ if [ "$COMMAND" == "clean" ]; then
   if [ -f $LOCAL_WEBAPP_DIR ]; then
     echo "CATAMARAN Removing symlinks from: $LOCAL_WEBAPP_DIR .."
     rm $LOCAL_WEBAPP_DIR/WEB-INF/freemarker 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/css 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/js 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/img 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/assets 2> /dev/null
+    rm $LOCAL_WEBAPP_DIR/static 2> /dev/null
   fi  
+  
+  # Remove symlink in tomcat/webapps back to project's target directory
+  echo "CATAMARAN Removing symlink or directory $LOCAL_WEBAPP_NAME inside $LOCAL_TOMCAT_WEBAPPS_DIR .."
+  cd $LOCAL_TOMCAT_WEBAPPS_DIR
+  rm $LOCAL_WEBAPP_NAME
   
   # Then maven clean
   echo "CATAMARAN Performing 'mvn clean' in $PROJECT_HOME .."
+  cd $PROJECT_HOME
   mvn clean
 
   echo "CATAMARAN manage.sh: Finished command $COMMAND" 
@@ -214,10 +232,7 @@ if [ "$COMMAND" == "deploy" ]; then
   if [ -f $LOCAL_WEBAPP_DIR ]; then
     echo "CATAMARAN Removing symlinks from: $LOCAL_WEBAPP_DIR .."
     rm $LOCAL_WEBAPP_DIR/WEB-INF/freemarker 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/css 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/js 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/img 2> /dev/null
-    rm $LOCAL_WEBAPP_DIR/assets 2> /dev/null
+    rm $LOCAL_WEBAPP_DIR/static 2> /dev/null
   fi  
 
   # Then build a war
@@ -235,15 +250,17 @@ fi
 # Command not recognized
 echo "Usage: manage.sh command [target_server]"
 echo "Valid commands are:"
-echo "  start         (starts tomcat)"
+echo "  run           (starts tomcat with visible log output and no remote debugger support)"
+echo "  rerun         (builds then starts tomcat with visible log output and no remote debugger support)"
+echo "  start         (starts tomcat with remote debugger support enabled)"
 echo "  stop          (stops tomcat)"
 echo "  restart       (stops then starts tomcat)"
 echo "  build         (compiles java and builds webapp with local web symlinks)"
 echo "  clean         (removes local web symlinks and does maven clean which removes /target)"
 echo "  rebuild       (stops tomcat, builds, starts tomcat)"
 echo "  build-war     (compiles java, builds webapp with no symlinks)"
-echo "  deploy        (build-war, scp war to server, restart server)"
-echo "  status        (shows any running java processes matching this project name)"
+echo "  deploy        (build-war, scp war to server)"
+echo "  status        (shows any running java processes matching current project name)"
 echo "  status-java   (shows all running java processes)"
 echo " "
 
@@ -260,4 +277,3 @@ echo " "
 
 
 exit 1
-

@@ -1,1 +1,1 @@
-rm -rf /catamaran/servers/catamaran-faq/solr_local/data
+rm -rf /catamaran/apps/catamaran-faq/solr_local/data
