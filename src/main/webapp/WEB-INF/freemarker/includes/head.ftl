@@ -1,5 +1,5 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-	<title>Integrity Rater | Know who to trust</title>
+	<title>Catamaran FAQ | Wiki, Discussions, and FAQs in one</title>
 	
 	<link type="text/css" rel="stylesheet" href="static/css/global.css" media="screen, projection">
 	<link type="text/css" rel="stylesheet" href="static/css/top-nav.css" media="screen, projection">

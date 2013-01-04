@@ -10,11 +10,12 @@
 
 <div id="bodyContent">
 	
-	<h1>People</h1>
+	<h1>Users</h1>
 	
+	<a href="user-edit">Create User</a>
 	<ul>
-	<#list persons as person>
-		<li><a href="person?personId=${person.id?c}">${person.name.last}, ${person.name.first}</a></li>
+	<#list users as user>
+		<li><a href="user?key=${user.key}">${user.name.last}, ${user.name.first}</a></li>
 	</#list>
 	</ul>
 	

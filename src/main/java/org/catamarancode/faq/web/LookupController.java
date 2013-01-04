@@ -6,18 +6,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.catamarancode.faq.entity.Faq;
 import org.catamarancode.faq.entity.NestedTag;
-import org.catamarancode.faq.service.solr.SolrService;
+import org.catamarancode.faq.service.SolrService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,77 +29,8 @@ public class LookupController {
 
     private Logger logger = LoggerFactory.getLogger(LookupController.class);
 
-    @Resource
+    @Autowired
     private SolrService solrService;
-
-    /*
-    @RequestMapping("/tags.json")
-    public ModelAndView tags(HttpServletRequest request,
-            @RequestParam(required = true) String term) throws Exception {
-
-        ModelAndView mv = new ModelAndView("json-string");
-        
-        // Perform solr search
-        String query = String.format("tag:%s*", term);
-        QueryResponse queryResponse = solrService.search(query);
-        List<Faq> faqs = solrService.extractFaqs(queryResponse);
-        
-        // Build a uniqe list of tag strings
-        Set<String> uniqueTags = new HashSet<String>();
-        for (Faq faq : faqs) {
-            for (Tag tag : faq.getTags()) {
-                
-                // Only include the tags that start with term (since a doc may have multiple tags)
-                String tagStr = tag.getName();
-                if (StringUtils.hasText(tagStr) && tagStr.startsWith(term)) {
-                    uniqueTags.add(tag.getName());    
-                }   
-            }
-        }
-        
-        // Convert to a list and Sort alpha
-        List<String> orderedTags = new ArrayList(uniqueTags);
-        Collections.sort(orderedTags);
-
-        // Build results
-        JSONArray json = new JSONArray();
-        for (String name : orderedTags) {
-            json.add(name);
-        }
-        mv.addObject("json", json);
-        return mv;
-    }
-    */
-    
-    @RequestMapping("/tags.json")
-    public ModelAndView categories(HttpServletRequest request,
-            @RequestParam(required = true) String term) throws Exception {
-
-        ModelAndView mv = new ModelAndView("json-string");
-        
-        // Perform solr search
-        String query1 = String.format("nested-tag-1:%s*", term);
-        QueryResponse queryResponse = solrService.search(query1);
-        List<Faq> faqs = solrService.extractFaqs(queryResponse);
-        
-        // Build a uniqe list of category strings
-        Set<String> uniqueStrings = new HashSet<String>();
-        for (Faq faq : faqs) {
-            uniqueStrings.add(faq.getNestedTags()[0].asPipeSeparatedString());
-        }
-        
-        // Convert to a list and Sort alpha
-        List<String> orderedStrings = new ArrayList(uniqueStrings);
-        Collections.sort(orderedStrings);
-
-        // Build results
-        JSONArray json = new JSONArray();
-        for (String name : orderedStrings) {
-            json.add(name);
-        }
-        mv.addObject("json", json);
-        return mv;
-    }
     
     /**
      * 
@@ -111,12 +41,12 @@ public class LookupController {
      * @param element3
      * @return
      */
-    private ModelAndView nestedTagSearch(int nestedLevel, String term, String element1, String element2, String element3) {
+    private ModelAndView nestedTagSearch(NestedTag parentTag, String partialTerm) {
     	
         ModelAndView mv = new ModelAndView("json-string");
         
         // Perform solr search
-        List<Faq> faqs = solrService.searchByNestedTag(nestedLevel, term);
+        Set<Faq> faqs = solrService.searchByNestedTag(parentTag, partialTerm);
         
         // Build a uniqe list of category strings based on nested tags that match the term.
         // Note that solr search may return multiple tags per faq so we need to ignore tags that don't match
@@ -128,34 +58,40 @@ public class LookupController {
         			continue;
         		}
         		
-        		if (matchCandidate.getElements().size() < nestedLevel) {
+        		NestedTag candidateParentComparisonTag = null;
+        		if (parentTag != null) {
+        			candidateParentComparisonTag = matchCandidate.getTagAtLevel(parentTag.getNestedLevel());
+        			if (candidateParentComparisonTag == null) {
+        				
+        				// Candidate is too shallow
+        				continue;
+        			} else {
+        				if (!candidateParentComparisonTag.match(parentTag)) {
+        					
+        					// Parents are comparable but different
+        					continue;
+        				}
+        			}
+        		}
+        		
+        		String candidateString = null;
+        		if (parentTag != null ) {
+        			candidateString = matchCandidate.getElementAtLevel(parentTag.getNestedLevel()+1);
+        		} else {
+        			candidateString = matchCandidate.getFirstElement();
+        		}
+        		
+        		if (candidateString == null) {
         			continue;
         		}
-    			
-        		String candidateString = matchCandidate.getElements().get((nestedLevel-1));
         		
         		// Does the faq result match the original term?
-        		if (StringUtils.hasText(term)) {	        		
-	    			if (!candidateString.startsWith(term)) {
+        		if (StringUtils.hasText(partialTerm)) {	        		
+	    			if (!candidateString.startsWith(partialTerm)) {
 	    				continue;
 	    			}
         		}
         				
-				// Was prior element1 specified, and does it match?        				
-				if (element1 != null && !(element1.equalsIgnoreCase(matchCandidate.getElements().get(0)))) {
-					continue;
-				}
-
-				// Was prior element2 specified, and does it match?        				
-				if (element2 != null && !(element2.equalsIgnoreCase(matchCandidate.getElements().get(1)))) {
-					continue;
-				}
-
-				// Was prior element3 specified, and does it match?        				
-				if (element3 != null && !(element3.equalsIgnoreCase(matchCandidate.getElements().get(2)))) {
-					continue;
-				}
-				
 				// We have a match
 				uniqueStrings.add(candidateString);
         	}
@@ -185,7 +121,7 @@ public class LookupController {
     public ModelAndView tags1(HttpServletRequest request,
             @RequestParam(required = true) String term) throws Exception {
 
-    	return nestedTagSearch(1, term, null, null, null);
+    	return nestedTagSearch(null, term);
     }    
     
     @RequestMapping("/tags2.json")
@@ -193,7 +129,9 @@ public class LookupController {
             @RequestParam(required = true) String term, 
             @RequestParam(required = true) String tagX1) throws Exception {
     	
-    	return nestedTagSearch(2, term, tagX1, null, null);
+    	NestedTag parentTag = new NestedTag();
+    	parentTag.addElement(tagX1);
+    	return nestedTagSearch(parentTag, term);
     }    
     
     @RequestMapping("/tags3.json")
@@ -202,7 +140,11 @@ public class LookupController {
             @RequestParam(required = true) String tagX1, 
             @RequestParam(required = true) String tagX2) throws Exception {
 
-    	return nestedTagSearch(3, term, tagX1, tagX2, null);
+    	NestedTag parentTag = new NestedTag();
+    	parentTag.addElement(tagX1);
+    	parentTag.addElement(tagX2);
+
+    	return nestedTagSearch(parentTag, term);
     }    
     
     @RequestMapping("/tags4.json")
@@ -212,7 +154,12 @@ public class LookupController {
             @RequestParam(required = true) String tagX2,
             @RequestParam(required = true) String tagX3) throws Exception {
 
-    	return nestedTagSearch(3, term, tagX1, tagX2, tagX3);
+    	NestedTag parentTag = new NestedTag();
+    	parentTag.addElement(tagX1);
+    	parentTag.addElement(tagX2);
+    	parentTag.addElement(tagX3);
+
+    	return nestedTagSearch(parentTag, term);
     }    
     
     @RequestMapping("/faq.json")

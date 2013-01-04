@@ -38,6 +38,7 @@ form div {padding: 0.2em;}
 ul.tags {
 	list-style-type: none;
 	padding: 0px;
+	padding-left: 4px;
 	margin: 0px;	
 	font-size:small;
 	display:inline;
@@ -46,6 +47,7 @@ ul.tags {
 ul.tags li {
 	display:inline;
 	padding: 0px;
+	padding-right: 6px;
 	margin: 0px;
 }
 
@@ -89,4 +91,5 @@ ul.categoryList li {
 .toggle {
 	font-family:monospace;
 	font-size:larger;
+	cursor: pointer;	
 }

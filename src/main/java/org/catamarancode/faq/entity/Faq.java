@@ -1,18 +1,22 @@
 package org.catamarancode.faq.entity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
-import org.catamarancode.faq.service.solr.SolrService;
+import org.catamarancode.faq.service.SolrService;
 import org.catamarancode.type.Name;
+import org.catamarancode.util.Timestamped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-public class Faq {
+import com.petebevin.markdown.MarkdownProcessor;
+
+public class Faq implements Comparable<Object>, Timestamped {
     
     private Logger logger = LoggerFactory.getLogger(Faq.class);
     
@@ -24,6 +28,8 @@ public class Faq {
     private String shortId; // Used for html links etc
     private Name ownerName;
     private NestedTag[] nestedTags = new NestedTag[4];
+	private Date createdTime;
+	private Date lastModifiedTime;
     
     private static SolrService solrService;
     
@@ -46,6 +52,8 @@ public class Faq {
         this.question = (String) doc.getFieldValue("question");
         this.answer = (String) doc.getFieldValue("answer");
         this.ownerKey = (String) doc.getFieldValue("owner-key");
+        this.createdTime = (Date) doc.getFieldValue("created");
+        this.lastModifiedTime = (Date) doc.getFieldValue("modified-time");
         String ownerNameStr =  (String) doc.getFieldValue("owner-name");
         if (StringUtils.hasText(ownerNameStr)) {
             this.ownerName = Name.createFromFullNameString(ownerNameStr);    
@@ -78,6 +86,8 @@ public class Faq {
         inputDoc.addField("answer", this.getAnswer());
         inputDoc.addField("owner-key", this.getOwnerKey());
         inputDoc.addField("owner-name", this.getOwnerName());
+        inputDoc.addField("created", this.getCreatedTime());
+        inputDoc.addField("modified-time", this.getLastModifiedTime());
         
         for (int i = 0; i < this.nestedTags.length; i++) {
         	int j = 0;
@@ -119,6 +129,11 @@ public class Faq {
         this.question = question;
         if (this.key == null) {
             
+        	// We must have a question, otherwise create default string
+        	if (!StringUtils.hasText(question)) {
+        		question = "Missing question";
+        	}
+        	
             // Create key from question
             String strippedQuestion = question.replaceAll("[^A-Za-z0-9]", "_");
             String newKey = null;
@@ -151,6 +166,11 @@ public class Faq {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+    
+    public void setAnswerAndParseMarkdown(String markdownAnswer) {    	
+    	MarkdownProcessor m = new MarkdownProcessor(); 
+    	this.answer = m.markdown(markdownAnswer);
     }
     
     public String getContextId() {
@@ -253,6 +273,28 @@ public class Faq {
 			return tag.getElements().get(j);
 		}
 		return null;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		Faq otherFaq = (Faq) o;
+		return this.question.compareToIgnoreCase(otherFaq.getQuestion());
+	}
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public Date getLastModifiedTime() {
+		return lastModifiedTime;
+	}
+
+	public void setLastModifiedTime(Date lastModifiedTime) {
+		this.lastModifiedTime = lastModifiedTime;
 	}
 
 }

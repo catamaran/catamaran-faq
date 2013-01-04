@@ -5,18 +5,10 @@
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
   
-  <!-- Keep web sessions alive until browser is closed. -->
   <session-config>
-    <session-timeout>0</session-timeout>
+    <!-- two weeks -->
+    <session-timeout>20160</session-timeout>
   </session-config>
-  	  	
-	<context-param>		 
-		<param-name>contextConfigLocation</param-name>
-		<param-value>
-			classpath:spring-services.xml			
-		</param-value>
-	</context-param>
-	
 	
 	<!-- Requires servlet api 2.4 or higher (tomcat 5.x is ok) 
 	See http://www.springframework.org/docs/reference/webintegration.html -->

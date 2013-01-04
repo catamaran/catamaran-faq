@@ -6,6 +6,12 @@
  http://www.springframework.org/schema/beans/spring-beans.xsd
  http://www.springframework.org/schema/context
  http://www.springframework.org/schema/context/spring-context.xsd ">
+ 
+ <!-- Scan classes with annotations for spring bean definitions
+see: http://matthiaswessendorf.wordpress.com/2010/04/17/spring-3-0-and-jsr-330-part/
+and: http://richardchesterwood.blogspot.com/2011/03/using-sessions-in-spring-mvc-including.html
+-->
+<context:component-scan base-package="org.catamarancode.faq.service" />
 
 <!-- Load environment-specific properties such as database ports and passwords -->
 <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -22,7 +28,7 @@
 </bean>
 
 	<bean id="solrService"
-	 class="org.catamarancode.faq.service.solr.SolrServiceImpl">
+	 class="org.catamarancode.faq.service.SolrService">
 	 	<constructor-arg ref="solrServerConfig"/>
 	</bean>
 	

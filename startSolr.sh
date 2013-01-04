@@ -1,1 +1,1 @@
-/catamaran/servers/catamaran-faq/solr_tomcat/bin/catalina.sh start
+/catamaran/apps/catamaran-faq/solr_tomcat/bin/catalina.sh start

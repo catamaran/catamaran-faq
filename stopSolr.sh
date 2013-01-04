@@ -1,1 +1,1 @@
-/catamaran/servers/catamaran-faq/solr_tomcat/bin/shutdown.sh
+/catamaran/apps/catamaran-faq/solr_tomcat/bin/shutdown.sh

@@ -26,3 +26,7 @@ ul#level1 {
 .answerBox p {
 	margin-left: 0.9em;
 }
+
+form {
+    display:inline-block;
+}

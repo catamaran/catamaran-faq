@@ -12,10 +12,10 @@
 	<form action="signin" method="post">
 	
 		<#if message??>
-			<#if message.success>
-				<p class="successMessage">${message.text}</p>
+			<#if messageSuccess>
+				<p class="successMessage">${message}</p>
 			<#else>
-				<p class="failureMessage">${message.text}</p>
+				<p class="failureMessage">${message}</p>
 			</#if>
 		</#if>
 	
@@ -33,6 +33,7 @@
 			<div>
 				<label for="button"></label>
 				<input type="submit" value="Sign in" />
+				<a href="index">Cancel</a>
 			</div>
 		</fieldset>
 		</div>

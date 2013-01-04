@@ -1,6 +1,6 @@
+- public visibility
+- comments / audit
+- refactor: clean up topic extraction from list of FAQs
+
 - attachments
-- admin login
-- comments / discussion thread
-- revision history audit
-- multiple nested tags instead of category/tags
-- markdown
+

@@ -30,7 +30,7 @@
             <div class="answerBox"><p>${faq.answer}<p></div>
             Tagged as: <ul class="tags" style="list-style:none">	           
                 <#list faq.nestedTagsAsList as tag><li style="">
-                    <a href="index?tag=${tag.pipeSeparated}">${tag.colonSeparated}</a>
+                    <a href="index?query=topic:${tag.pipeSeparated}">${tag.colonSeparated}</a>
 			    </#list>
 			</ul>
         </div>

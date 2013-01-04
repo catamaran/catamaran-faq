@@ -12,13 +12,13 @@
     <dependency>
       <groupId>org.catamarancode</groupId>
       <artifactId>catamaran-mvc</artifactId>
-      <version>1.0</version>
+      <version>1.1</version>
     </dependency>
 	
     <dependency>
       <groupId>org.catamarancode</groupId>
       <artifactId>catamaran-core</artifactId>
-      <version>1.1</version>
+      <version>1.2-SNAPSHOT</version>
     </dependency>
 	
 	<dependency>
@@ -47,6 +47,12 @@
       <version>2.3</version>
 	  <classifier>jdk15</classifier>
     </dependency>	
+    
+    <dependency>
+      <groupId>org.markdownj</groupId>
+      <artifactId>markdownj</artifactId>
+      <version>0.3.0-1.0.2b4</version>
+    </dependency>       
 
     <dependency>
       <groupId>junit</groupId>
@@ -86,66 +92,30 @@
 	</dependency>
 	
 	
-		<!-- begin hibernate -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>3.6.7.Final</version>
-			<!-- version>3.3.0.GA</version -->
-			<!-- version>3.5.6-Final</version -->
-		</dependency>
-		<!-- dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-annotations</artifactId>
-			<version>3.3.0.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-commons-annotations</artifactId>
-			<version>3.2.0.Final</version>
-		</dependency -->
-		<dependency>
-			<groupId>javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.12.1.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>c3p0</groupId> 
-			<artifactId>c3p0</artifactId> 
-			<version>0.9.1</version> 
-		</dependency>
-        <dependency>
-          <groupId>mysql</groupId>
-          <artifactId>mysql-connector-java</artifactId>
-          <version>5.1.6-bin</version>
-        </dependency>
 
-		<!-- end hibernate -->	
-		
-	<!-- Begin: Spring Framework and required dependencies -->
-	<dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring-core</artifactId>
-		<version>3.0.5.RELEASE</version>
-	</dependency>
-	<dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring-orm</artifactId>
-		<version>3.0.5.RELEASE</version>
-	</dependency>
-	
-	<dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring-webmvc</artifactId>
-		<version>3.0.5.RELEASE</version>
-	</dependency>
-	<dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring-context-support</artifactId>
-		<version>3.0.5.RELEASE</version>
-	</dependency>
-	
-	<!-- End: Spring Framework and required dependencies -->
+        <!-- Begin: Spring Framework and required dependencies -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>3.1.2.RELEASE</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <version>3.1.2.RELEASE</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>3.1.2.RELEASE</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
+        <version>3.1.2.RELEASE</version>
+    </dependency>   
+    <!-- End: Spring Framework and required dependencies -->    
 		
 	<dependency>
 		<groupId>servletapi</groupId>

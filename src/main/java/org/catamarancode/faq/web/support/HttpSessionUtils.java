@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.catamarancode.faq.entity.User;
-import org.catamarancode.faq.service.solr.SolrService;
+import org.catamarancode.faq.service.SolrService;
 
 
 public class HttpSessionUtils {
