@@ -79,7 +79,7 @@ public class UserController {
             faq.setOwnerName(userContext.getUser().getName());
         }            
         faq.setQuestion(question);
-        faq.setAnswerAndParseMarkdown(answer);
+        faq.setAnswer(answer);
         faq.setLastModifiedTime(new Date());
 
         // tags

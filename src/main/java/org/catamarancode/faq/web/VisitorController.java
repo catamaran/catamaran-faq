@@ -1,10 +1,11 @@
 package org.catamarancode.faq.web;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -115,14 +116,12 @@ public class VisitorController {
         }
         
         // Create keyword list from tags and categories
-        List<String> keywords = extractKeywords(faqs);
+        Set<String> keywords = extractKeywords(faqs);
         
         // Create keyword list from only
         
         List<String> level1 = new ArrayList<String>();
         
-        //mv.addObject("tags", allTags);
-        //mv.addObject("faqs", allFaqs);
         mv.addObject("keywords", keywords);
         mv.addObject("top", top);
         return mv;
@@ -132,8 +131,16 @@ public class VisitorController {
      * Create keyword list from all tags and categories
      * @return
      */
-    private List<String> extractKeywords(List<Faq> faqs) {
-        Set<String> keywords = new HashSet<String>();
+    private Set<String> extractKeywords(List<Faq> faqs) {
+        SortedSet<String> keywords = new TreeSet<String>(new Comparator() {
+
+        	public int compare(Object arg0, Object arg1) {
+        		String a = (String) arg0;
+        		String b = (String) arg1;
+        		return a.compareToIgnoreCase(b);
+			}
+        	
+        });
         for (Faq faq : faqs) {
             
         	for (int i = 0; i < faq.getNestedTags().length; i++) {
@@ -146,9 +153,7 @@ public class VisitorController {
         	}
         }
         
-        List<String> list = new ArrayList<String>(keywords);
-        Collections.sort(list);
-        return list;
+        return keywords;
         
     }
   

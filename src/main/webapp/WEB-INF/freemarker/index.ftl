@@ -46,7 +46,7 @@
 			<#list top.childNodes as level1Node>
 				<li class="category">
 				    <#if (level1Node.faqCount > 0)>
-				        <a href="index??query=topic:${level1Node.pipeSeparatedName}">${level1Node.name}</a>
+				        <a href="index?query=topic:${level1Node.pipeSeparatedName}">${level1Node.name}</a>
 				    </#if>
 					<ul>
 					<#list level1Node.faqs as faq>

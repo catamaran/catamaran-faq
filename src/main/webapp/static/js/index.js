@@ -39,7 +39,7 @@ $().ready(function() {
      		anchor.html('+');
      	} else {	
 	    	$.getJSON('faq.json?key=' + shortId, function(data) {
-	    		$(answerParagraphSelector).html('<p>' + data.answer + '</p>');
+	    		$(answerParagraphSelector).html('<p>' + data.answerAsMarkdown + '</p>');
 	    	});
 	    	anchor.html('-');
      	}

@@ -31,9 +31,10 @@
 			</div>
 	        <div id="answerBox">					
 		        <label>Answer</label>
-		        <textarea rows="17" cols="72" tabindex=1 name="answer">${(faq.answer)!}</textarea>
+		        <textarea rows="20" cols="72" tabindex=1 name="answer">${(faq.answer)!}</textarea>
+
 		        <div id="markdownHelp">
-		          <p>Answer will be parsed with <a href="http://daringfireball.net/projects/markdown/syntax">Markdown</a>.</p>
+		          <p>Answers will be parsed with <a href="http://daringfireball.net/projects/markdown/syntax">Markdown</a>.</p>
 
                   <p>
                       For example, start a code block with an empty line and 4 indented spaces to create a code block. Entering this:<br/>
@@ -50,7 +51,10 @@
                         <div class="codeSample">
                             Declaring a variable in Java:
                             <pre><code>private String abc;</code></pre>
-                        </div>                  
+                        </div>                                          
+                  </p>
+                  <p>
+                    You can also begin and end a code block with three or more tildes (~~~) for the same effect (useful for stack traces -- see <a href="http://michelf.ca/projects/php-markdown/extra/#fenced-code-blocks">this reference</a>).
                   </p>
 		        </div> 
 			</div>

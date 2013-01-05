@@ -25,9 +25,9 @@
 		<#if faq.category??>		
 			<ul class="categoryList"><#list faq.category.elements as category><li><a href="index?category=${category}">${category}</a><#if category_has_next> : </#if></li></#list></ul>
 		</#if>
+		<p>${faq.question}</p>
 		<div class="faq">		
-	        ${faq.question}
-            <div class="answerBox"><p>${faq.answer}<p></div>
+            <div class="answerBox"><p>${faq.answerAsMarkdown}<p></div>
             Tagged as: <ul class="tags" style="list-style:none">	           
                 <#list faq.nestedTagsAsList as tag><li style="">
                     <a href="index?query=topic:${tag.pipeSeparated}">${tag.colonSeparated}</a>

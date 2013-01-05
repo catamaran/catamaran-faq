@@ -1,5 +1,9 @@
 package org.catamarancode.faq.entity;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -163,14 +167,42 @@ public class Faq implements Comparable<Object>, Timestamped {
     public String getAnswer() {
         return answer;
     }
+    
+    public String getAnswerAsMarkdown() {    
+    	BufferedReader b = new BufferedReader(new StringReader(this.answer));
+    	StringWriter w = new StringWriter();
+    	
+    	// Additional tag support -- tilde etc -- see http://michelf.ca/projects/php-markdown/extra/#fenced-code-blocks   	
+    	try {
+    		String line = null;
+    		boolean indent = false;
+    		while ((line = b.readLine()) != null) {
+    			if (line.startsWith("~~~")) {
+    				if (indent) {
+    					indent = false;
+    				} else {
+    					indent = true;
+    				}    			
+    				w.write("\r\n");
+    			} else if (indent) {
+    				w.write("    ");
+    				w.write(line);
+    				w.write("\r\n");
+    			} else {
+    				w.write(line);
+    				w.write("\r\n");
+    			}
+    		}
+    	} catch (IOException e) {
+    		logger.error("Markdown parsing error", e);
+    	}
+    	
+    	MarkdownProcessor m = new MarkdownProcessor(); 
+    	return m.markdown(w.toString());
+    }
 
     public void setAnswer(String answer) {
         this.answer = answer;
-    }
-    
-    public void setAnswerAndParseMarkdown(String markdownAnswer) {    	
-    	MarkdownProcessor m = new MarkdownProcessor(); 
-    	this.answer = m.markdown(markdownAnswer);
     }
     
     public String getContextId() {
