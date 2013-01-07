@@ -114,15 +114,6 @@ if [ "$COMMAND" == "stop" ]; then
   exit 0  
 fi
 
-if [ "$COMMAND" == "restart" ]; then
-  $CURRENT_DIR/manage.sh stop
-  echo "CATAMARAN sleeping 5 seconds before restart .." 
-  sleep 5 # may need to wait longer on slower machines
-  $CURRENT_DIR/manage.sh start
-  echo "CATAMARAN manage.sh: Finished command $COMMAND" 
-  exit 0  
-fi
-
 if [ "$COMMAND" == "build" ]; then
   cd $PROJECT_HOME
 
@@ -188,7 +179,7 @@ if [ "$COMMAND" == "clean" ]; then
   exit 0  
 fi
 
-if [ "$COMMAND" == "rebuild" ]; then
+if [ "$COMMAND" == "restart" ]; then
   $CURRENT_DIR/manage.sh stop
   $CURRENT_DIR/manage.sh build
   $CURRENT_DIR/manage.sh start
@@ -252,12 +243,11 @@ echo "Usage: manage.sh command [target_server]"
 echo "Valid commands are:"
 echo "  run           (starts tomcat with visible log output and no remote debugger support)"
 echo "  rerun         (builds then starts tomcat with visible log output and no remote debugger support)"
-echo "  start         (starts tomcat with remote debugger support enabled)"
+echo "  start         (starts tomcat with remote debugger port)"
 echo "  stop          (stops tomcat)"
-echo "  restart       (stops then starts tomcat)"
+echo "  restart       (stops, builds, then starts tomcat with remote debugger port)"
 echo "  build         (compiles java and builds webapp with local web symlinks)"
 echo "  clean         (removes local web symlinks and does maven clean which removes /target)"
-echo "  rebuild       (stops tomcat, builds, starts tomcat)"
 echo "  build-war     (compiles java, builds webapp with no symlinks)"
 echo "  deploy        (build-war, scp war to server)"
 echo "  status        (shows any running java processes matching current project name)"

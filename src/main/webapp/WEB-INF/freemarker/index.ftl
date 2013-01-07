@@ -13,15 +13,13 @@
 	
 	<div id="bodyContent">
 
-		<#if message??>
-			<div class="errorMessage">
-			<#if message.success>
-				<p class="successMessage">${message.text}</p>
-			<#else>
-				<p class="failureMessage">${message.text}</p>
-			</#if>
-			</div>
-		</#if>
+        <#if message??>
+            <#if messageSuccess>
+                <p class="successMessage">${message}</p>
+            <#else>
+                <p class="failureMessage">${message}</p>
+            </#if>
+        </#if>
 		
 		<div id="leftCol">
 			<!-- <h3><a href="index">FAQs</a><#if RequestParameters.tag??> : Tag="${RequestParameters.tag}"</#if><#if RequestParameters.query??> : Search="${RequestParameters.query}"</#if>
@@ -46,7 +44,7 @@
 			<#list top.childNodes as level1Node>
 				<li class="category">
 				    <#if (level1Node.faqCount > 0)>
-				        <a href="index?query=topic:${level1Node.pipeSeparatedName}">${level1Node.name}</a>
+				        <a href="index?query=topic:${level1Node.colonSeparatedNameNoSpaces}">${level1Node.name}</a>
 				    </#if>
 					<ul>
 					<#list level1Node.faqs as faq>
@@ -58,7 +56,7 @@
 					<#list level1Node.childNodes as level2Node>
 						<li class="category">
 						    <#if (level2Node.faqCount > 0)>
-						      <a href="index?query=topic:${level1Node.pipeSeparatedName}">${level1Node.name}</a> : <a href="index?query=topic:${level2Node.pipeSeparatedName}">${level2Node.name}</a>
+						      <a href="index?query=topic:${level1Node.colonSeparatedNameNoSpaces}">${level1Node.name}</a> : <a href="index?query=topic:${level2Node.colonSeparatedNameNoSpaces}">${level2Node.name}</a>
 						    </#if>
 							<ul>
 							<#list level2Node.faqs as faq>
@@ -70,7 +68,7 @@
 							<#list level2Node.childNodes as level3Node>
 								<li class="category">
 								    <#if (level3Node.faqCount > 0)>
-								        <a href="index?query=topic:${level1Node.pipeSeparatedName}">${level1Node.name}</a> : <a href="index?query=topic:${level2Node.pipeSeparatedName}">${level2Node.name}</a> : <a href="index?query=topic:${level3Node.pipeSeparatedName}">${level3Node.name}</a><!-- (${level3Node.faqCount?c}) -->
+								        <a href="index?query=topic:${level1Node.colonSeparatedNameNoSpaces}">${level1Node.name}</a> : <a href="index?query=topic:${level2Node.colonSeparatedNameNoSpaces}">${level2Node.name}</a> : <a href="index?query=topic:${level3Node.colonSeparatedNameNoSpaces}">${level3Node.name}</a><!-- (${level3Node.faqCount?c}) -->
 								    </#if>
 									<ul>
 									<#list level3Node.faqs as faq>
@@ -82,7 +80,7 @@
 									<#list level3Node.childNodes as level4Node>
 										<li class="category">
 										    <#if (level4Node.faqCount > 0)>
-										      <a href="index?query=topic:${level1Node.pipeSeparatedName}">${level1Node.name} : <a href="index?query=topic:${level2Node.pipeSeparatedName}">${level2Node.name}</a> : <a href="index?query=topic:${level3Node.pipeSeparatedName}">${level3Node.name}</a> : <a href="index?query=topic:${level4Node.pipeSeparatedName}">${level4Node.name}</a><!-- (${level4Node.faqCount?c}) -->
+										      <a href="index?query=topic:${level1Node.colonSeparatedNameNoSpaces}">${level1Node.name} : <a href="index?query=topic:${level2Node.colonSeparatedNameNoSpaces}">${level2Node.name}</a> : <a href="index?query=topic:${level3Node.colonSeparatedNameNoSpaces}">${level3Node.name}</a> : <a href="index?query=topic:${level4Node.colonSeparatedNameNoSpaces}">${level4Node.name}</a><!-- (${level4Node.faqCount?c}) -->
 										    </#if>
 											<ul>
 											<#list level4Node.faqs as faq>

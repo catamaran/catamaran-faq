@@ -12,6 +12,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.catamarancode.faq.service.SolrService;
+import org.catamarancode.faq.service.support.Visibility;
 import org.catamarancode.type.Name;
 import org.catamarancode.util.Timestamped;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ public class Faq implements Comparable<Object>, Timestamped {
     private NestedTag[] nestedTags = new NestedTag[4];
 	private Date createdTime;
 	private Date lastModifiedTime;
+	private Visibility visibility;
     
     private static SolrService solrService;
     
@@ -62,6 +64,12 @@ public class Faq implements Comparable<Object>, Timestamped {
         if (StringUtils.hasText(ownerNameStr)) {
             this.ownerName = Name.createFromFullNameString(ownerNameStr);    
         }        
+        String visibilityStr = (String) doc.getFieldValue("visibility");
+        if (StringUtils.hasText(visibilityStr)) {
+        	this.visibility = Visibility.valueOf(visibilityStr);
+        } else {
+        	this.visibility = Visibility.CONTEXT;
+        }
 
         for (int i = 0; i < nestedTags.length; i++) {        	
         	for (int j = 0; j < 4; j++) {
@@ -92,6 +100,7 @@ public class Faq implements Comparable<Object>, Timestamped {
         inputDoc.addField("owner-name", this.getOwnerName());
         inputDoc.addField("created", this.getCreatedTime());
         inputDoc.addField("modified-time", this.getLastModifiedTime());
+        inputDoc.addField("visibility", this.getVisibility().name());
         
         for (int i = 0; i < this.nestedTags.length; i++) {
         	int j = 0;
@@ -329,4 +338,21 @@ public class Faq implements Comparable<Object>, Timestamped {
 		this.lastModifiedTime = lastModifiedTime;
 	}
 
+	public String toString() {
+		if (StringUtils.hasText(this.question)) {
+			return this.question;
+		}
+		if (StringUtils.hasText(this.key)) {
+			return "key: " + this.key;
+		}
+		return "Empty_FAQ";
+	}
+
+	public Visibility getVisibility() {
+		return visibility;
+	}
+
+	public void setVisibility(Visibility visibility) {
+		this.visibility = visibility;
+	}
 }

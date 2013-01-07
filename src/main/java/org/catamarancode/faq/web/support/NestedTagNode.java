@@ -26,6 +26,12 @@ public class NestedTagNode implements Comparable<Object> {
     	return sb.toString();
     }
     
+    public String getColonSeparatedNameNoSpaces() {
+    	StringBuilder sb = new StringBuilder();
+    	this.prependParentNamesColonNoSpaces(sb);
+    	return sb.toString();
+    }
+    
     public String getPipeSeparatedName() {
     	StringBuilder sb = new StringBuilder();
     	this.prependPipeParentNames(sb);
@@ -44,6 +50,21 @@ public class NestedTagNode implements Comparable<Object> {
     	}
     	if (this.getParent() != null && this.getParent().getName() != null) {
     		this.getParent().prependParentNames(sb);
+    	}    	
+    }
+    
+    private void prependParentNamesColonNoSpaces(StringBuilder sb) {
+    	boolean bottom = true;
+    	if (sb.length() > 0) {
+    		bottom = false;
+    	}    	
+    	if (!bottom) {
+    		sb.insert(0, this.name + ":");
+    	} else {
+    		sb.insert(0, this.name);
+    	}
+    	if (this.getParent() != null && this.getParent().getName() != null) {
+    		this.getParent().prependParentNamesColonNoSpaces(sb);
     	}    	
     }
 

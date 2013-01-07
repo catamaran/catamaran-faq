@@ -25,10 +25,11 @@ public class UserContext implements Serializable {
     private static SolrService solrService;
 	
 	private static final String USER_MODEL_KEY = "user";
+	public static final String LONG_TERM_USERID_COOKIE_REMOVED_VALUE = "cookie_value_removed";
 
 	private static final long serialVersionUID = 1L;
 	
-	private Logger logger = LoggerFactory.getLogger(UserContext.class);
+	private Logger logger = LoggerFactory.getLogger(UserContext.class);	
 	
 	/**
 	 * Workaround for unexpected session termination
@@ -45,8 +46,23 @@ public class UserContext implements Serializable {
 	}
 	
 	public User getUser() {
-		User user = this.solrService.loadUser(this.getUserKey());
+		User user = solrService.loadUser(this.getUserKey());
 		return user;
+	}
+	
+	/**
+	 * Returns the context id that is in effect for current user (or visitor if not logged in)
+	 * @return
+	 */
+	public String getEffectiveContextId(HttpServletRequest request) {
+        String contextId = SolrService.CONTEXT_ID_PUBLIC;
+    	if (this.isLoggedIn(request)) {
+    		User user = this.getUser();
+    		if (user != null) {
+    			contextId = this.getUser().getContextId();	
+    		}    		
+    	}
+    	return contextId;
 	}
 
 	public String getUserKey() {
@@ -66,7 +82,7 @@ public class UserContext implements Serializable {
 		// Workaround:  Check cookie if nothing in session
 		if (this.userKey == null) {	
 			String cookieUserId = getCookieValue(USERID_COOKIE_NAME, request);
-			if (cookieUserId != null) {
+			if (cookieUserId != null && !cookieUserId.equals(LONG_TERM_USERID_COOKIE_REMOVED_VALUE)) {
 				userKey = cookieUserId;					
 					
 				// Debug logging only

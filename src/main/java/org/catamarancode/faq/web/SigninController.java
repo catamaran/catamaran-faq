@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -66,10 +67,15 @@ public class SigninController {
 	}
 	
 	@RequestMapping(value = "/signout", method = RequestMethod.GET)	
-	public String logOut(Map<String,Object> model) {
+	public String logOut(HttpServletResponse response, Map<String,Object> model) {
 
+		User user = userContext.getUser();
 		userContext.setUserKey(null);
-		return "redirect:/signin";
+		Cookie cookie = new Cookie(UserContext.USERID_COOKIE_NAME, UserContext.LONG_TERM_USERID_COOKIE_REMOVED_VALUE);
+		cookie.setMaxAge(2592000); // 30 days
+		response.addCookie(cookie);
+		messageContext.setMessage("Signed out " + user.getEmail(), true);
+		return "redirect:/index";
 	}
 
 }

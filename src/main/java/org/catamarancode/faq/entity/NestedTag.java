@@ -27,6 +27,10 @@ public class NestedTag {
     	return CollectionUtils.toString(elements, " : ");
     }
     
+    public String getColonSeparatedNoSpaces() {
+    	return CollectionUtils.toString(elements, ":");
+    }
+
     public static NestedTag createFromPipeSeparatedString(String pipeSeparatedTag) {
         NestedTag tag = new NestedTag();
         tag.setFromPipeSeparatedString(pipeSeparatedTag);
@@ -112,18 +116,18 @@ public class NestedTag {
     }
     
     /**
-     * 
+     * Compares this object (a candidate for match) against original tag
      * @param otherTag
-     * @param lenient if you also want to match with parent tags
+     * @param lenient if you also want to match with parent tags (that is, the top n elements of the candidate match all the n elements of the original) 
      * @return
      */
-    public boolean match(NestedTag otherTag, boolean lenient) {
-    	if (otherTag == null) {
+    public boolean match(NestedTag originalTag, boolean lenient) {
+    	if (originalTag == null) {
     		return false;
     	}
     	
     	// Identical match?
-    	if (this.asPipeSeparatedString().equals(otherTag.asPipeSeparatedString())) {
+    	if (this.asPipeSeparatedString().equalsIgnoreCase(originalTag.asPipeSeparatedString())) {
     		return true;
     	}
     	
@@ -132,13 +136,15 @@ public class NestedTag {
     	}
     	
     	// Determine shortest match level
-    	int compareLevel = this.getNestedLevel();
-    	if (otherTag.getNestedLevel() < this.getNestedLevel()) {
-    		compareLevel = otherTag.getNestedLevel();
+    	int compareLevel = originalTag.getNestedLevel();
+    	
+    	// left hand (candidate tag) too short?
+    	if (this.getNestedLevel() < compareLevel) {    		
+    		return false;
     	}
     	
     	for (int i = 0; i < compareLevel; i++) {
-    		if (!this.elements.get(i).equals(otherTag.getElements().get(i))) {
+    		if (!this.elements.get(i).equalsIgnoreCase(originalTag.getElements().get(i))) {
     			return false;
     		}
     	}

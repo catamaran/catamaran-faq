@@ -1,9 +1,12 @@
 body {
-	margin:0 0;
+	margin:0px;
 	/*font-family: arial,sans-serif;*/
 	font-family: Georgia,"Times New Roman","Bitstream Vera Serif",serif;
 }
 
+.clearfix {
+    clear: both;
+}
 
 .grey {
 	font-size: 0.9em;
@@ -65,15 +68,9 @@ ul.categoryList li {
 	margin: 0px;
 }
 
-.faq {
-	background-color: #dddddd;
-	padding: 0.5em;
-	margin: 0.5em;
-}
-
-.faq p {
-	/*padding: 0px;	
-	margin: 0px;*/
+.faqMeta {
+    margin-top:8px;
+    margin-bottom:8px;
 }
 
 .answerBox {

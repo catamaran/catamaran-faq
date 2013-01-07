@@ -5,6 +5,7 @@ import java.util.Date;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
+import org.catamarancode.faq.service.SolrService;
 import org.catamarancode.type.Name;
 import org.catamarancode.util.PasswordUtils;
 import org.catamarancode.util.Timestamped;
@@ -154,7 +155,7 @@ public class User implements Timestamped {
         inputDoc.addField("administrator-flag", String.valueOf(this.isAdministrator()));
         
         // Default field for all solr docs of this type/class
-        inputDoc.addField("document-type", "USER");
+        inputDoc.addField("document-type", SolrService.DOCUMENT_TYPE_USER);
         
         
         return inputDoc;

@@ -5,37 +5,66 @@
 
 <head>
 	<#include "includes/head.ftl" />
+	<link type="text/css" rel="stylesheet" href="static/css/faq.css" media="screen, projection">
 </head>
 <body>
 <#include "includes/top-nav.ftl" />
 
 	<div id="bodyContent">
 	
-		<#if message??>
-			<div class="errorMessage">
-			<#if message.success>
-				<p class="successMessage">${message.text}</p>
-			<#else>
-				<p class="failureMessage">${message.text}</p>
-			</#if>
-			</div>
-		</#if>	
+        <#if message??>
+            <#if messageSuccess>
+                <p class="successMessage">${message}</p>
+            <#else>
+                <p class="failureMessage">${message}</p>
+            </#if>
+        </#if>
 		
-		<h3><a href="index">FAQs</a></h3>
-		<#if faq.category??>		
-			<ul class="categoryList"><#list faq.category.elements as category><li><a href="index?category=${category}">${category}</a><#if category_has_next> : </#if></li></#list></ul>
-		</#if>
-		<p>${faq.question}</p>
+		<h2>${faq.question}</h2>
 		<div class="faq">		
             <div class="answerBox"><p>${faq.answerAsMarkdown}<p></div>
-            Tagged as: <ul class="tags" style="list-style:none">	           
-                <#list faq.nestedTagsAsList as tag><li style="">
-                    <a href="index?query=topic:${tag.pipeSeparated}">${tag.colonSeparated}</a>
-			    </#list>
-			</ul>
         </div>
-        <br/>
-        <a href="faq-edit?key=${faq.key}">edit</a>
+        <div class="faqMeta">
+            Owner: ${faq.ownerName!} | 
+            Tagged as: <ul class="tags" style="list-style:none">               
+                <#list faq.nestedTagsAsList as tag><li style="">
+                    <a href="index?query=topic:${tag.colonSeparatedNoSpaces}">${tag.colonSeparated}</a>
+                </#list>
+            </ul>
+        </div>           
+        <#if user??>
+            <a href="faq-edit?key=${faq.key}">edit</a>
+            <#if ((user.administrator) && !(faq.visibility == "PUBLIC"))>
+                | <a href="faq-publicize?key=${faq.key}">publicize</a>
+            </#if>
+        </#if>
+        
+        <#if (comments?size > 0)>
+            <hr/>
+            <h4>Comments:</h4>
+            <#list comments as comment>
+                ${comment.ownerName} on ${comment.lastModifiedTime?datetime?string} said:<br/>
+                ${comment.body}<br/><br/>
+            </#list>
+        </#if>
+        <#if user??>
+            <hr/>
+            <h4>New comment:</h4>
+            <form method="post" action="comment-edit">
+                <input type="hidden" name="faqKey" value="${(faq.key)!}" />
+                <input type="hidden" name="commentKey" value="${(currentComment.key)!}" />
+                <textarea rows="4" cols="72" name="body">${(currentComment.body)!}</textarea>
+                <input type="submit" tabindex=99 value="Save" />
+            </form>
+        </#if>
+        
+        <#if user??>
+            <hr/>
+            <h4>Activity:</h4>
+            <#list audits as audit>
+                ${audit.ownerName} on ${audit.lastModifiedTime?datetime?string}: ${audit.body}<br/><br/>
+            </#list>
+        </#if>
 
 	</div> <!-- bodyContent -->
 </body>

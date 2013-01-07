@@ -1,0 +1,12 @@
+
+.faq {
+    background-color: #dddddd;
+    padding-left: 12px;
+    margin-left: -12px;
+    margin-right: -12px;
+}
+
+.faq p {
+    /*padding: 0px; 
+    margin: 0px;*/
+}

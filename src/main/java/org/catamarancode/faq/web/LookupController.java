@@ -14,9 +14,11 @@ import net.sf.json.JSONObject;
 import org.catamarancode.faq.entity.Faq;
 import org.catamarancode.faq.entity.NestedTag;
 import org.catamarancode.faq.service.SolrService;
+import org.catamarancode.faq.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,12 +27,16 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 @Controller
+@Scope("request")
 public class LookupController {
 
     private Logger logger = LoggerFactory.getLogger(LookupController.class);
 
     @Autowired
     private SolrService solrService;
+    
+    @Autowired
+	private UserContext userContext;        
     
     /**
      * 
@@ -41,12 +47,12 @@ public class LookupController {
      * @param element3
      * @return
      */
-    private ModelAndView nestedTagSearch(NestedTag parentTag, String partialTerm) {
+    private ModelAndView nestedTagSearch(HttpServletRequest request, NestedTag parentTag, String partialTerm) {
     	
         ModelAndView mv = new ModelAndView("json-string");
         
-        // Perform solr search
-        Set<Faq> faqs = solrService.searchByNestedTag(parentTag, partialTerm);
+        // Perform solr search        
+        Set<Faq> faqs = solrService.searchByNestedTag(parentTag, partialTerm, userContext.getEffectiveContextId(request));
         
         // Build a uniqe list of category strings based on nested tags that match the term.
         // Note that solr search may return multiple tags per faq so we need to ignore tags that don't match
@@ -121,7 +127,7 @@ public class LookupController {
     public ModelAndView tags1(HttpServletRequest request,
             @RequestParam(required = true) String term) throws Exception {
 
-    	return nestedTagSearch(null, term);
+    	return nestedTagSearch(request, null, term);
     }    
     
     @RequestMapping("/tags2.json")
@@ -131,7 +137,7 @@ public class LookupController {
     	
     	NestedTag parentTag = new NestedTag();
     	parentTag.addElement(tagX1);
-    	return nestedTagSearch(parentTag, term);
+    	return nestedTagSearch(request, parentTag, term);
     }    
     
     @RequestMapping("/tags3.json")
@@ -144,7 +150,7 @@ public class LookupController {
     	parentTag.addElement(tagX1);
     	parentTag.addElement(tagX2);
 
-    	return nestedTagSearch(parentTag, term);
+    	return nestedTagSearch(request, parentTag, term);
     }    
     
     @RequestMapping("/tags4.json")
@@ -159,7 +165,7 @@ public class LookupController {
     	parentTag.addElement(tagX2);
     	parentTag.addElement(tagX3);
 
-    	return nestedTagSearch(parentTag, term);
+    	return nestedTagSearch(request, parentTag, term);
     }    
     
     @RequestMapping("/faq.json")

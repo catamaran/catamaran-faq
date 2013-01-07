@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServer;
@@ -15,9 +16,12 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
+import org.catamarancode.faq.entity.Audit;
+import org.catamarancode.faq.entity.Comment;
 import org.catamarancode.faq.entity.Faq;
 import org.catamarancode.faq.entity.NestedTag;
 import org.catamarancode.faq.entity.User;
+import org.catamarancode.faq.service.support.Visibility;
 import org.catamarancode.solr.SearchQuery;
 import org.catamarancode.solr.SolrServerConfig;
 import org.catamarancode.util.CollectionUtils;
@@ -27,6 +31,12 @@ import org.springframework.util.StringUtils;
 
 public class SolrService {
     
+	public static final String CONTEXT_ID_PUBLIC = "public";
+	public static final String DOCUMENT_TYPE_FAQ = "FAQ";
+	public static final String DOCUMENT_TYPE_USER = "USER";
+	public static final String DOCUMENT_TYPE_COMMENT = "COMMENT";
+	public static final String DOCUMENT_TYPE_AUDIT = "AUDIT";
+	
     private static final long DEFAULT_ROWS = 200;
     
     static Logger logger = LoggerFactory.getLogger(SolrService.class
@@ -38,8 +48,32 @@ public class SolrService {
         this.solrServerConfig = solrServerConfig;
     }
 
-    public List<Faq> listFaqs() {
-        return this.searchFaq(null);
+    public List<Faq> listFaqs(String contextId) {
+        return this.searchFaq(null, contextId);
+    }
+
+    public List<Audit> listAudits(String contextId) {
+    	List<Audit> list = this.searchAudit(null, contextId);
+    	if (list != null) {
+    		return list;
+    	}
+    	return (List<Audit>) ListUtils.EMPTY_LIST;
+    }
+    
+    public List<Audit> listAudits(Faq faq) {
+    	List<Audit> list = this.searchAudit(faq, faq.getContextId());
+    	if (list != null) {
+    		return list;
+    	}
+    	return (List<Audit>) ListUtils.EMPTY_LIST;
+    }
+    
+    public List<Comment> listComments(Faq faq) {
+    	List<Comment> list = this.searchComment(faq, faq.getContextId());
+    	if (list != null) {
+    		return list;
+    	}
+    	return (List<Comment>) ListUtils.EMPTY_LIST;
     }
     
     public List<User> listUsers() {
@@ -54,9 +88,9 @@ public class SolrService {
         
         List<Faq> faqs = null;
         if (id.startsWith(Faq.SHORT_ID_PREFIX)) {
-            faqs = this.searchFaq("short-id:" + id);
+            faqs = this.searchFaq("short-id:" + id, null);
         } else {
-            faqs = this.searchFaq("key:" + id);
+            faqs = this.searchFaq("key:" + id, null);
         }
                 
         if (faqs.isEmpty()) {
@@ -73,6 +107,32 @@ public class SolrService {
     	return null;
     }
     
+    public Audit loadAudit(String key, String contextId) {
+    	String modifiedQuery = null;
+        modifiedQuery = "document-type:" + DOCUMENT_TYPE_AUDIT + " AND key:" + key;
+        
+        // Search
+        QueryResponse queryResponse = this.search(modifiedQuery, contextId, null, 200, 0);
+        List<Audit> audits = extractAudits(queryResponse);    	
+    	if (audits != null && !audits.isEmpty()) {
+    		return (Audit) CollectionUtils.findOne(audits);
+    	}    		
+    	return null;
+    }    
+    
+    public Comment loadComment(String key, String contextId) {
+    	String modifiedQuery = null;
+        modifiedQuery = "document-type:" + DOCUMENT_TYPE_COMMENT + " AND key:" + key;
+        
+        // Search
+        QueryResponse queryResponse = this.search(modifiedQuery, contextId, null, 200, 0);
+        List<Comment> comments = extractComments(queryResponse);    	
+    	if (comments != null && !comments.isEmpty()) {
+    		return (Comment) CollectionUtils.findOne(comments);
+    	}    		
+    	return null;
+    }
+    
     public User findUserByEmail(String email) {
     	List<User> users = this.searchForUsers("email:" + email);
     	if (users != null && !users.isEmpty()) {
@@ -81,24 +141,50 @@ public class SolrService {
     	return null;
     }
 
-    public List<Faq> searchFaq(String query) {
-        return searchFaq(query, null);
+    public List<Faq> searchFaq(String query, String contextId) {
+        return searchFaq(query, contextId, null);
     }
     
-    public List<Faq> searchFaq(String query, Map<String, String> facetFields) {
-        return searchFaq(query, facetFields, DEFAULT_ROWS, 0);
+    public List<Faq> searchFaq(String query, String contextId, Map<String, String> facetFields) {
+        return searchFaq(query, contextId, facetFields, DEFAULT_ROWS, 0);
     }
     
-    public List<Faq> searchFaq(String query, Map<String, String> facetFields, long rows, long startRow) {
+    public List<Audit> searchAudit(Faq faq, String contextId) {
         String modifiedQuery = null;
-        if (StringUtils.hasText(query)) {
-            modifiedQuery = "document-type:FAQ AND " + query;
+        if (faq != null) {
+            modifiedQuery = "document-type:" + DOCUMENT_TYPE_AUDIT + " AND faq-foreign-key:" + faq.getKey();
         } else {
-            modifiedQuery = "document-type:FAQ";
+            modifiedQuery = "document-type:" + DOCUMENT_TYPE_AUDIT + " AND context-id:" + contextId;
         }
         
         // Search
-        QueryResponse queryResponse = this.search(modifiedQuery, facetFields, rows, startRow);
+        QueryResponse queryResponse = this.search(modifiedQuery, contextId, null, 200, 0);
+        return extractAudits(queryResponse);
+    }
+    
+    public List<Comment> searchComment(Faq faq, String contextId) {
+    	String modifiedQuery = null;
+        if (faq != null) {
+            modifiedQuery = "document-type:" + DOCUMENT_TYPE_COMMENT + " AND faq-foreign-key:" + faq.getKey();
+        } else {
+            modifiedQuery = "document-type:" + DOCUMENT_TYPE_COMMENT + " AND context-id:" + contextId;
+        }
+        
+        // Search
+        QueryResponse queryResponse = this.search(modifiedQuery, contextId, null, 200, 0);
+        return extractComments(queryResponse);
+    }
+    
+    public List<Faq> searchFaq(String query, String contextId, Map<String, String> facetFields, long rows, long startRow) {
+        String modifiedQuery = null;
+        if (StringUtils.hasText(query)) {
+            modifiedQuery = "document-type:" + DOCUMENT_TYPE_FAQ + " AND " + query;
+        } else {
+            modifiedQuery = "document-type:" + DOCUMENT_TYPE_FAQ;
+        }
+        
+        // Search
+        QueryResponse queryResponse = this.search(modifiedQuery, contextId, facetFields, rows, startRow);
         return extractFaqs(queryResponse);
     }
     
@@ -109,13 +195,13 @@ public class SolrService {
     public List<User> searchForUsers(String query, Map<String, String> facetFields, long rows, long startRow) {
         String modifiedQuery = null;
         if (StringUtils.hasText(query)) {
-            modifiedQuery = "document-type:USER AND " + query;
+            modifiedQuery = "document-type:" + DOCUMENT_TYPE_USER + " AND " + query;
         } else {
-            modifiedQuery = "document-type:USER";
+            modifiedQuery = "document-type:" + DOCUMENT_TYPE_USER;
         }
         
-        // Search
-        QueryResponse queryResponse = this.search(modifiedQuery, facetFields, rows, startRow);
+        // Search. Using null context since users are (presently) limited to admins anyway
+        QueryResponse queryResponse = this.search(modifiedQuery, null, facetFields, rows, startRow);
         return extractUsers(queryResponse);
     }    
     
@@ -125,14 +211,14 @@ public class SolrService {
      * @param lenient also return matches to any child-tags
      * @return
      */
-    public Set<Faq> findByTag(NestedTag tag, boolean includeChildren) {
+    public Set<Faq> findByTag(NestedTag tag, boolean includeChildren, String contextId) {
     	
     	// TODO: Optimize this query
         String query1 = null;
         int nestedLevel = tag.getNestedLevel();
     	query1 = String.format("tag-1-%d:[* TO *] tag-2-%d:[* TO *] tag-3-%d:[* TO *] tag-4-%d:[* TO *]", nestedLevel, nestedLevel, nestedLevel, nestedLevel);
         
-        QueryResponse queryResponse = this.search(query1);
+        QueryResponse queryResponse = this.search(query1, contextId);
         List<Faq> unfilteredFaqs = this.extractFaqs(queryResponse);
         
         // Weed out "false" matches.
@@ -164,7 +250,7 @@ public class SolrService {
      * @param element1 Prior (higher-level) tag value. Only applies if nestedLevel is 2 or higher.
      * @return a unique, set of faq's
      */
-    public Set<Faq> searchByNestedTag(NestedTag parentTag, String partialTerm) {
+    public Set<Faq> searchByNestedTag(NestedTag parentTag, String partialTerm, String contextId) {
     	
         String query1 = null;
         int nestedLevel = 1;
@@ -179,7 +265,7 @@ public class SolrService {
         	query1 = String.format("tag-1-%d:[* TO *] tag-2-%d:[* TO *] tag-3-%d:[* TO *] tag-4-%d:[* TO *]", nestedLevel, nestedLevel, nestedLevel, nestedLevel);
         }
         
-        QueryResponse queryResponse = this.search(query1);
+        QueryResponse queryResponse = this.search(query1, contextId);
         List<Faq> unfilteredFaqs = this.extractFaqs(queryResponse);
         
         // Weed out "false" matches.
@@ -253,15 +339,43 @@ public class SolrService {
         return users;
     }
     
-    public QueryResponse search(String query) {
-        return search(query, null);
+    private List<Audit> extractAudits(QueryResponse queryResponse) {
+        SolrDocumentList solrDocumentList = queryResponse.getResults();
+        int solrTotalHits = ((int) solrDocumentList.getNumFound());
+        
+        // Process every Solr Document returned back
+        List<Audit> docs = new ArrayList<Audit>();
+        for (SolrDocument doc : solrDocumentList) {
+            Audit audit = new Audit(doc);
+            docs.add(audit);
+        }
+
+        return docs;
     }
     
-    public QueryResponse search(String query, Map<String, String> facetFields) {
-        return search(query, facetFields, DEFAULT_ROWS, 0);
+    private List<Comment> extractComments(QueryResponse queryResponse) {
+        SolrDocumentList solrDocumentList = queryResponse.getResults();
+        int solrTotalHits = ((int) solrDocumentList.getNumFound());
+        
+        // Process every Solr Document returned back
+        List<Comment> docs = new ArrayList<Comment>();
+        for (SolrDocument doc : solrDocumentList) {
+        	Comment c = new Comment(doc);
+            docs.add(c);
+        }
+
+        return docs;
     }
     
-    public QueryResponse search(SearchQuery searchQuery) {
+    public QueryResponse search(String query, String contextId) {
+        return search(query, contextId, null);
+    }
+    
+    public QueryResponse search(String query, String contextId, Map<String, String> facetFields) {
+        return search(query, contextId, facetFields, DEFAULT_ROWS, 0);
+    }
+    
+    private QueryResponse search(SearchQuery searchQuery) {
         SolrQuery solrQuery = searchQuery.getSolrQuery();        
         long start = System.currentTimeMillis();
 
@@ -284,8 +398,15 @@ public class SolrService {
         return queryResponse;
     }
 
-    public QueryResponse search(String query, Map<String, String> facetFields, long rows, long startRow) {
-        SearchQuery searchQuery = new SearchQuery(query);
+    public QueryResponse search(String query, String contextId, Map<String, String> facetFields, long rows, long startRow) {
+        SearchQuery searchQuery = null;
+        if (contextId == null) {
+        	searchQuery = new SearchQuery(query);
+        } else if (contextId.equals(CONTEXT_ID_PUBLIC)) {
+        	searchQuery = new SearchQuery("(" + query + ") AND visibility:" + Visibility.PUBLIC.name());
+        } else {
+        	searchQuery = new SearchQuery("(" + query + ") AND context-id:" + contextId);
+        }
 
         // Sorting and max rows
         searchQuery.addSortField("question", ORDER.asc);
@@ -346,4 +467,40 @@ public class SolrService {
         logger.debug(String.format("Added %s to solr", user.getName()));
         return true;
     }    
+    
+    public boolean save(Audit audit) {
+        SolrServer solr = solrServerConfig.getSolrServer();
+        SolrInputDocument inputDoc = audit.toSolrInputDocument();
+        try {
+            solr.add(inputDoc);
+            solr.commit();
+        } catch (SolrServerException e) {
+            throw new RuntimeException(String.format(
+                    "Solr error when adding audit %s", audit), e);
+        } catch (IOException e) {
+            throw new RuntimeException(String.format(
+                    "IOException when adding audit %s", audit), e);
+        }
+
+        logger.debug(String.format("Added %s to solr", audit));
+        return true;
+    }       
+    
+    public boolean save(Comment comment) {
+        SolrServer solr = solrServerConfig.getSolrServer();
+        SolrInputDocument inputDoc = comment.toSolrInputDocument();
+        try {
+            solr.add(inputDoc);
+            solr.commit();
+        } catch (SolrServerException e) {
+            throw new RuntimeException(String.format(
+                    "Solr error when adding comment %s", comment), e);
+        } catch (IOException e) {
+            throw new RuntimeException(String.format(
+                    "IOException when adding comment %s", comment), e);
+        }
+
+        logger.debug(String.format("Added %s to solr", comment));
+        return true;
+    }        
 }
