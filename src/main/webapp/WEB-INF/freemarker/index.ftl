@@ -48,7 +48,7 @@
 				    </#if>
 					<ul>
 					<#list level1Node.faqs as faq>
-						<li id="${faq.shortId}" class="faq">
+						<li id="${level1Node.nodeId}-${faq.shortId}" class="faq">
 							<a class="toggle" name="${faq.shortId}" nohref>+</a> <a href="faq?key=${faq.key}">${faq.question}</a>
 							<div class="answerBox"></div>
 						</li>
@@ -60,7 +60,7 @@
 						    </#if>
 							<ul>
 							<#list level2Node.faqs as faq>
-								<li id="${faq.shortId}" class="faq">
+								<li id="${level2Node.nodeId}-${faq.shortId}" class="faq">
 									<a class="toggle" name="${faq.shortId}" nohref>+</a> <a href="faq?key=${faq.key}">${faq.question}</a>
 									<div class="answerBox"></div>
 								</li>								
@@ -72,7 +72,7 @@
 								    </#if>
 									<ul>
 									<#list level3Node.faqs as faq>
-										<li id="${faq.shortId}" class="faq">
+										<li id="${level3Node.nodeId}-${faq.shortId}" class="faq">
 											<a class="toggle" name="${faq.shortId}" nohref>+</a> <a href="faq?key=${faq.key}">${faq.question}</a>
 											<div class="answerBox"></div>
 										</li>
@@ -84,7 +84,7 @@
 										    </#if>
 											<ul>
 											<#list level4Node.faqs as faq>
-												<li id="${faq.shortId}" class="faq">
+												<li id="${level4Node.nodeId}-${faq.shortId}" class="faq">
 													<a class="toggle" name="${faq.shortId}" nohref>+</a> <a href="faq?key=${faq.key}">${faq.question}</a>
 													<div class="answerBox"></div>
 												</li>

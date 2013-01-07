@@ -20,6 +20,31 @@ public class NestedTagNode implements Comparable<Object> {
     	return this.parent;
     }
     
+    /**
+     * Generate a node id that can be used as a jQuery selector
+     * @return
+     */
+    public String getNodeId() {
+    	String s = this.getUnderscoreSeparatedName();
+
+    	// remove all characters except letters, numbers, underscores and dashes
+    	StringBuilder sb = new StringBuilder();
+    	Character ch;
+    	for (int i = 0; i < s.length(); i++) {
+    		ch = s.charAt(i);
+    		if (Character.isLetterOrDigit(ch) || ch == '-' || ch == '_') {
+    			sb.append(ch);
+    		}
+    	}
+    	return sb.toString();
+    }
+
+    public String getUnderscoreSeparatedName() {
+    	StringBuilder sb = new StringBuilder();
+    	this.prependParentUnderscoreNames(sb);
+    	return sb.toString();
+    }
+    
     public String getColonSeparatedName() {
     	StringBuilder sb = new StringBuilder();
     	this.prependParentNames(sb);
@@ -50,6 +75,21 @@ public class NestedTagNode implements Comparable<Object> {
     	}
     	if (this.getParent() != null && this.getParent().getName() != null) {
     		this.getParent().prependParentNames(sb);
+    	}    	
+    }
+    
+    private void prependParentUnderscoreNames(StringBuilder sb) {
+    	boolean bottom = true;
+    	if (sb.length() > 0) {
+    		bottom = false;
+    	}    	
+    	if (!bottom) {
+    		sb.insert(0, this.name + "_");
+    	} else {
+    		sb.insert(0, this.name);
+    	}
+    	if (this.getParent() != null && this.getParent().getName() != null) {
+    		this.getParent().prependParentUnderscoreNames(sb);
     	}    	
     }
     
