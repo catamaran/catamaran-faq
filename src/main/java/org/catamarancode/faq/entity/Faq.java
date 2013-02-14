@@ -1,9 +1,5 @@
 package org.catamarancode.faq.entity;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,13 +9,12 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.catamarancode.faq.service.SolrService;
 import org.catamarancode.faq.service.support.Visibility;
+import org.catamarancode.faq.util.CatamaranMarkdown;
 import org.catamarancode.type.Name;
 import org.catamarancode.util.Timestamped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
-
-import com.petebevin.markdown.MarkdownProcessor;
 
 public class Faq implements Comparable<Object>, Timestamped {
     
@@ -177,37 +172,9 @@ public class Faq implements Comparable<Object>, Timestamped {
         return answer;
     }
     
-    public String getAnswerAsMarkdown() {    
-    	BufferedReader b = new BufferedReader(new StringReader(this.answer));
-    	StringWriter w = new StringWriter();
-    	
-    	// Additional tag support -- tilde etc -- see http://michelf.ca/projects/php-markdown/extra/#fenced-code-blocks   	
-    	try {
-    		String line = null;
-    		boolean indent = false;
-    		while ((line = b.readLine()) != null) {
-    			if (line.startsWith("~~~")) {
-    				if (indent) {
-    					indent = false;
-    				} else {
-    					indent = true;
-    				}    			
-    				w.write("\r\n");
-    			} else if (indent) {
-    				w.write("    ");
-    				w.write(line);
-    				w.write("\r\n");
-    			} else {
-    				w.write(line);
-    				w.write("\r\n");
-    			}
-    		}
-    	} catch (IOException e) {
-    		logger.error("Markdown parsing error", e);
-    	}
-    	
-    	MarkdownProcessor m = new MarkdownProcessor(); 
-    	return m.markdown(w.toString());
+    public String getAnswerAsMarkdown() {
+    	CatamaranMarkdown m = new CatamaranMarkdown(); 
+    	return m.markdown(this.answer);
     }
 
     public void setAnswer(String answer) {

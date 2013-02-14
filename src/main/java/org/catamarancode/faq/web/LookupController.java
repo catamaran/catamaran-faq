@@ -1,5 +1,6 @@
 package org.catamarancode.faq.web;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -15,10 +16,15 @@ import org.catamarancode.faq.entity.Faq;
 import org.catamarancode.faq.entity.NestedTag;
 import org.catamarancode.faq.service.SolrService;
 import org.catamarancode.faq.service.UserContext;
+import org.catamarancode.faq.util.FaqUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -180,6 +186,60 @@ public class LookupController {
         JSONObject json = JSONObject.fromObject(faq);
         mv.addObject("json", json);
         return mv;
+    }
+    
+    @RequestMapping("/keywords.json")
+    public ResponseEntity<String> keywords(HttpServletRequest request,
+            @RequestParam(required = false) String query) throws UnsupportedEncodingException {
+
+        // Logged in user?  If so show non-public FAQs
+        String contextId = userContext.getEffectiveContextId(request);
+        
+        // Default to showing all faqs (TODO: paginate in the future)
+        List<Faq> faqs = solrService.listFaqs(contextId);        
+        
+        Set<String> keywords = FaqUtils.extractKeywords(faqs);
+        
+        JSONArray jsonArray = new JSONArray();
+        for (String keyword : keywords) {
+        	
+        	// Compute a font size based on word length range from min 3 to max 8
+        	int size = 2; // default
+        	
+        	if (keyword.length() < 4) {
+        		size = 8;
+        	} else if (keyword.length() < 6) {
+        		size = 7;
+        	} else if (keyword.length() < 9) {
+        		size = 6;
+        	} else if (keyword.length() < 11) {
+        		size = 5;
+        	} else if (keyword.length() < 16) {
+        		size = 4;
+        	} else if (keyword.length() < 22) {
+        		size = 3;
+        	}
+        	
+        	JSONObject jsonObject = new JSONObject();
+        	jsonObject.put("word",  keyword);
+        	jsonObject.put("size", size);
+        	jsonArray.add(jsonObject);
+        }
+        
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Access-Control-Allow-Origin", "*");
+        return new ResponseEntity<String>(jsonArray.toString(2), responseHeaders, HttpStatus.CREATED);        
+    }
+    
+    @RequestMapping("/something")
+    public ResponseEntity<String> handle(HttpEntity<byte[]> requestEntity) throws UnsupportedEncodingException {
+      String requestHeader = requestEntity.getHeaders().getFirst("MyRequestHeader");
+      byte[] requestBody = requestEntity.getBody();
+      // do something with request header and body
+
+      HttpHeaders responseHeaders = new HttpHeaders();
+      responseHeaders.set("MyResponseHeader", "MyValue");
+      return new ResponseEntity<String>("Hello World", responseHeaders, HttpStatus.CREATED);
     }
 
 }

@@ -1,16 +1,16 @@
 package org.catamarancode.faq.web;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.StringWriter;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.catamarancode.faq.entity.Audit;
 import org.catamarancode.faq.entity.Comment;
@@ -19,6 +19,8 @@ import org.catamarancode.faq.entity.NestedTag;
 import org.catamarancode.faq.service.MessageContext;
 import org.catamarancode.faq.service.SolrService;
 import org.catamarancode.faq.service.UserContext;
+import org.catamarancode.faq.util.CatamaranMarkdown;
+import org.catamarancode.faq.util.FaqUtils;
 import org.catamarancode.faq.web.support.NestedTagNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +53,8 @@ public class VisitorController {
         return index(request, response);
     }
 
-    @RequestMapping("/index")
-    public ModelAndView index(HttpServletRequest request,
+    @RequestMapping("/faqs")
+    public ModelAndView faqs(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
         // Get parameters
@@ -88,7 +90,7 @@ public class VisitorController {
             faqs = solrService.listFaqs(contextId);    
         }
         
-        ModelAndView mv = new ModelAndView("index");
+        ModelAndView mv = new ModelAndView();
         userContext.prepareModel(mv.getModel());
         messageContext.addPendingToModel(mv.getModel());
         
@@ -122,7 +124,7 @@ public class VisitorController {
         }
         
         // Create keyword list from tags and categories
-        Set<String> keywords = extractKeywords(faqs);
+        Set<String> keywords = FaqUtils.extractKeywords(faqs);
         
         // Create keyword list from only
         
@@ -131,36 +133,6 @@ public class VisitorController {
         mv.addObject("keywords", keywords);
         mv.addObject("top", top);
         return mv;
-    }
-    
-    /**
-     * Create keyword list from all tags and categories
-     * @return
-     */
-    private Set<String> extractKeywords(List<Faq> faqs) {
-        SortedSet<String> keywords = new TreeSet<String>(new Comparator() {
-
-        	public int compare(Object arg0, Object arg1) {
-        		String a = (String) arg0;
-        		String b = (String) arg1;
-        		return a.compareToIgnoreCase(b);
-			}
-        	
-        });
-        for (Faq faq : faqs) {
-            
-        	for (int i = 0; i < faq.getNestedTags().length; i++) {
-        		NestedTag tag = faq.getNestedTags()[i];
-        		if (tag != null) {
-            		for (String term : tag.getElements()) {
-       	                keywords.add(term);    
-       	            }
-        		}
-        	}
-        }
-        
-        return keywords;
-        
     }
   
     @RequestMapping("/faq")
@@ -191,8 +163,60 @@ public class VisitorController {
         return mv;
     }
     
-    @RequestMapping("/about")
-    public ModelAndView about(HttpServletRequest request,
+    @RequestMapping("/index")
+    public ModelAndView index(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        ModelAndView mv = new ModelAndView("index");
+        userContext.prepareModel(mv.getModel());
+        return mv;
+    }
+
+    @RequestMapping("/tutorial")
+    public ModelAndView tutorial(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        ModelAndView mv = new ModelAndView();
+        userContext.prepareModel(mv.getModel());
+        
+        // We maintain page contents as markdown for easy editing/formatting
+        URL loadedResource = this.getClass().getClassLoader().getResource("tutorial.md");
+       	BufferedReader b = new BufferedReader(new FileReader(loadedResource.getFile()));
+    	StringWriter w = new StringWriter();
+    	String line = null;
+		boolean indent = false;
+		while ((line = b.readLine()) != null) {
+			w.write(line);
+			w.write("\r\n");
+		}
+    	
+    	String s = w.toString();    	
+    	CatamaranMarkdown m = new CatamaranMarkdown(); 
+    	mv.addObject("htmlContent", m.markdown(s));
+        
+        return mv;
+    }
+
+    @RequestMapping("/reference")
+    public ModelAndView reference(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        ModelAndView mv = new ModelAndView();
+        userContext.prepareModel(mv.getModel());
+        return mv;
+    }
+
+    @RequestMapping("/source")
+    public ModelAndView source(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        ModelAndView mv = new ModelAndView();
+        userContext.prepareModel(mv.getModel());
+        return mv;
+    }
+
+    @RequestMapping("/download")
+    public ModelAndView download(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
         ModelAndView mv = new ModelAndView();

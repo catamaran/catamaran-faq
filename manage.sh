@@ -35,7 +35,7 @@ REMOTE_WEBAPP_NAME=ROOT
 # On Ubuntu, this is commonly /var/lib/tomcat7/webapps
 # IMPORTANT: Make both the user you're logging in with (i.e. 'sladmin') 
 #            and the tomcat server user (i.e. 'tomcat7') can write to this directory
-REMOTE_TOMCAT_WEBAPPS_DIR=/var/lib/tomcat7/faqapps
+REMOTE_TOMCAT_WEBAPPS_DIR=/var/lib/tomcat7/javaslapps
 
 
 

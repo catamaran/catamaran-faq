@@ -3,12 +3,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
-	<#include "includes/head.ftl" />
+	<link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/site.css" media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/top.css" media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/tabs.css" media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="static/css/java.css" media="screen, projection">
 </head>
 <body>
-<#include "includes/top-nav.ftl" />
+	<#include "includes/top-nav.ftl" />
+	
+	<#include "includes/java-tabs.ftl" />
 
-<div id="bodyContent">	
 	<h1>${displayUser.name.first} ${displayUser.name.last}</h1>
 	<p>
 	   Email: ${displayUser.email}<br/>
@@ -20,6 +24,6 @@
 	
 	<a href="user-edit?key=${displayUser.key}">Edit</a>
 	
-</div> <!-- bodyContent -->	
+	<#include "includes/bottom.ftl" />	
 </body>
 </html>

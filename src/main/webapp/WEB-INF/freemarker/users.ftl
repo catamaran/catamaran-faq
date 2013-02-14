@@ -3,13 +3,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
-	<#include "includes/head.ftl" />
+	<link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/site.css" media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/top.css" media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/tabs.css" media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="static/css/java.css" media="screen, projection">
 </head>
 <body>
-<#include "includes/top-nav.ftl" />
-
-<div id="bodyContent">
+	<#include "includes/top-nav.ftl" />
 	
+	<#include "includes/java-tabs.ftl" />
+
 	<h1>Users</h1>
 	
 	<a href="user-edit">Create User</a>
@@ -19,6 +22,6 @@
 	</#list>
 	</ul>
 	
-</div> <!-- bodyContent -->	
+	<#include "includes/bottom.ftl" />	
 </body>
 </html>

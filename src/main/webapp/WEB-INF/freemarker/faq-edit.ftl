@@ -4,15 +4,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
-	<#include "includes/head.ftl" />
+	<link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/site.css" media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/top.css" media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/tabs.css" media="screen, projection">
+    <link type="text/css" rel="stylesheet" href="static/css/java.css" media="screen, projection">
+
 	<script type="text/javascript" src="static/js/faq-edit.js"></script>
     <link type="text/css" rel="stylesheet" href="static/css/faq-edit.css" media="screen, projection">
 	
 </head>
 <body>
-<#include "includes/top-nav.ftl" />
+	<#include "includes/top-nav.ftl" />
 
-	<div id="bodyContent">
+	<#include "includes/java-tabs.ftl" />
 	
 		<#if message??>
 			<div class="errorMessage">
@@ -132,6 +136,6 @@
 			
 		</form>
 
-	</div> <!-- bodyContent -->
+	<#include "includes/bottom.ftl" />
 </body>
 </html>

@@ -39,6 +39,7 @@
 	    <property name="prefix" value=""/>
 	    <property name="suffix" value=".ftl"/>
 	    <property name="exposeSpringMacroHelpers" value="true"/>
+	    <property name="requestContextAttribute"  value="requestContext" />
 	</bean>
 	
 	<!-- This tells Spring MVC to look up a specific view by name in the WEB-INF/views.xml file before consulting other viewResolvers -->
