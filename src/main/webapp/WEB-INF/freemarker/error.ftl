@@ -4,17 +4,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <#assign page = "notFound">
 <head>
-	<link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/site.css" media="screen, projection">
-    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/top.css" media="screen, projection">
-    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/tabs.css" media="screen, projection">
-    <link type="text/css" rel="stylesheet" href="static/css/java.css" media="screen, projection">
+	<#include "includes/head.ftl" />
 </head>
 <#flush>
 <body>
-	<#include "includes/top.ftl" />
+	<#include "includes/top-nav.ftl" />
 	
-	<#include "includes/java-tabs.ftl" />
-
 	<h1>Sorry, but there has been some sort of error.</h1>				
 	<#if logExceptionMessage??>
 		<p>${logExceptionMessage}</p>

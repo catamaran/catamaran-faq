@@ -31,3 +31,7 @@ blockquote p {
     padding-top:3px;
     padding-bottom:4px;
 }
+
+#mainCol div+h1 { /* Trick to select first h1 - http://stackoverflow.com/questions/3747547/need-css-selector-for-first-div-within-another-div */
+    margin-top:0px;    
+}

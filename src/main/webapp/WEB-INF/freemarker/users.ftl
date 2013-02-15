@@ -3,25 +3,28 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
-	<link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/site.css" media="screen, projection">
-    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/top.css" media="screen, projection">
-    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/tabs.css" media="screen, projection">
-    <link type="text/css" rel="stylesheet" href="static/css/java.css" media="screen, projection">
+	<#include "includes/head.ftl" />
 </head>
 <body>
 	<#include "includes/top-nav.ftl" />
 	
-	<#include "includes/java-tabs.ftl" />
+	<div id="content">
+		<ul class="leftNav">
+			<#assign menu="faqs" />
+			<#include "includes/left-nav-content.ftl" />
+		</ul><div id="mainCol">
 
-	<h1>Users</h1>
+			<h1>Users</h1>
+			
+			<a href="user-edit">Create User</a>
+			<ul>
+			<#list users as user>
+				<li><a href="user?key=${user.key}">${user.name.last}, ${user.name.first}</a></li>
+			</#list>
+			</ul>
 	
-	<a href="user-edit">Create User</a>
-	<ul>
-	<#list users as user>
-		<li><a href="user?key=${user.key}">${user.name.last}, ${user.name.first}</a></li>
-	</#list>
-	</ul>
-	
+		</div> <!-- mainCol -->			
+	</div> <!-- content -->
 	<#include "includes/bottom.ftl" />	
 </body>
 </html>

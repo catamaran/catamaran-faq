@@ -1,47 +1,12 @@
-$().ready(function() {
-	
-	/* person search stuff */
-	
-	/* See http://docs.jquery.com/UI/Autocomplete */
-    $("input#autocomplete").autocomplete({
-    	source: "person-lookup.json",  
-    	minLength: 2 
-	});
-    
-    $("#autocomplete").focus(function() {
-    	var existingValue = $(this).val();
-    	if (existingValue == 'Enter a name..') {
-    		$(this).val('');
-    	}
-    });
-    
-    $('#searchBox .button').click(function(e) {
-		e.preventDefault() && e.preventDefault;
-		
-		var selectedName = $('#autocomplete').val();
-		/* $('#filterName').val(selectedName); */
-		$('#filterName').text(selectedName); 
-		
-		window.location = "index?personName=" + selectedName;
-		
-	});
-    
-    /* end person search stuff */
-	
-    /* vote stuff */
-	$('.voteLink').click(function(e) {
-		e.preventDefault() && e.preventDefault;
-		
-		$.getJSON($(e.target).attr("href"), function(json) {
+/* see http://stackoverflow.com/questions/647259/javascript-query-string */
+function getQueryString() {
+  var result = {}, queryString = location.search.substring(1),
+      re = /([^&=]+)=([^&]*)/g, m;
 
-			var complaintId = json['complaintId'];
-			var votes = json['totalVotes'];
-			var voteNumberId = '#complaintVoteNumber_' + complaintId;			
-			$(voteNumberId).text(votes);
-			$("#complaintVoteLink_" + complaintId).hide();
-		});		
-	});
-	/* end vote stuff */
-	
-});
+  while (m = re.exec(queryString)) {
+    result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+  }
+
+  return result;
+}
 	

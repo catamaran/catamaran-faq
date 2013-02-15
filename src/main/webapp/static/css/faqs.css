@@ -21,6 +21,7 @@ ul {
 ul#level1 {
 	padding: 0px;
 	margin: 0px;
+	margin-top: 8px;
 }
 
 .answerBox p {
@@ -28,5 +29,14 @@ ul#level1 {
 }
 
 form {
+    display:inline-block;
+}
+
+.toggle {
+    cursor: pointer;    
+}
+
+.plus {
+    width: 9px;
     display:inline-block;
 }

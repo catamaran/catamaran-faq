@@ -1,6 +1,7 @@
 #markdownHelp {
     display:inline-block;
-    width:300px;
+    /*width:300px;*/
+   padding-right:10px;
     font-size: 12px;
     vertical-align: top;
 }
@@ -11,6 +12,11 @@
 
 form label {
     width:64px;
+    display:block;
+}
+
+form input[type=text] {
+    width:500px;
 }
 
 .codeSample {

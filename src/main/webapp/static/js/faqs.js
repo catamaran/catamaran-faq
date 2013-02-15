@@ -1,9 +1,51 @@
-$(document).ready(function() { 
-    
+$().ready(function() {
+	
+    $("li.faq a.toggle").click(function(e) {
+    	
+    	e.preventDefault();
+    	
+    	var anchor = $(e.target);
+    	var parent = anchor.parent('.faq');
+    	var plus = parent.children('.plus');
+    	var nodeId = parent.attr('id');
+    	var idDelim = nodeId.indexOf("-");
+    	var faqShortId = nodeId.substring(idDelim+1);
+    	var nodeName = nodeId.substring(0, idDelim);
+    	console.log("nodeId " + nodeId);
+    	console.log("faqShortId " + faqShortId);
+    	console.log("nodeName " + nodeName);
+    	var answerParagraphSelector = "#" + nodeId + " div";
+    	
+    	// Detect if answer is currently shown or not
+    	var ht = $(answerParagraphSelector).html();
+    	var answerVisible = false;
+     	if (ht == null || ht.length == 0) {
+     		answerVisible = false;
+     		console.log("a " + ht);
+    	} else {
+    		answerVisible = true;
+    		console.log("b");
+    	}    	
+    	
+    	//alert('ho=' + faqId);
+     	if (answerVisible) {
+     		$(answerParagraphSelector).html(null);
+     		plus.html('+');
+     	} else {	
+	    	$.getJSON('faq.json?key=' + faqShortId, function(data) {
+	    		$(answerParagraphSelector).html('<p>' + data.answerAsMarkdown + '</p>');
+	    	});
+	    	plus.html('-');
+     	}
+	});
+	
+	
     // Render tag cloud html
     var output = "<ul>";
     
-    $.getJSON('keywords.json', function(data) {
+    var keyword = getQueryString()["query"];
+    
+    $.getJSON('keywords.json?query=' + keyword + '&canvas=small', function(data) {
         
         for (var i = 0, ii = data.length, thisTag, groupId; i < ii; i++) {
             element = data[i];            
@@ -35,7 +77,7 @@ $(document).ready(function() {
           hideTags: true,
         },'tags')) {
           // something went wrong, hide the canvas container
-           // $('#myCanvas').add('#tags').hide();
+            $('#myCanvas').add('#tags').hide();
         }
     },400);
     
@@ -47,6 +89,7 @@ $(document).ready(function() {
         
         window.location.href = "faqs?query=" + keyword;
         
-    });     
-
+    });    	
+	
 });
+	

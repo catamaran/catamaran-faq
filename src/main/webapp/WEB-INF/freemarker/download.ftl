@@ -3,19 +3,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 
 <head>
-	<link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/site.css" media="screen, projection">
-    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/top.css" media="screen, projection">
-    <link type="text/css" rel="stylesheet" href="http://stage.scandilabs.com/css/tabs.css" media="screen, projection">
-    <link type="text/css" rel="stylesheet" href="static/css/java.css" media="screen, projection">
+	<#include "includes/head.ftl" />
 </head>
 <body>
 	<#include "includes/top-nav.ftl" />
 	
-	<#include "includes/java-tabs.ftl" />
+	<div id="content">
+		<ul class="leftNav">
+			<#assign menu="download" />
+			<#include "includes/left-nav-content.ftl" />
+		</ul><div id="mainCol">
 
-	<h1>Download</h1>
-	<p>Compiled jar-files are available and ready to use from our <a href="http://maven.catamarancode.org/" target="_blank">Maven Repository</a>.</p> 
 
+			<h1 class="noTopMargin">Download</h1>
+			<p>Compiled jar-files are available and ready to use from our <a href="http://maven.catamarancode.org/" target="_blank">Maven Repository</a>.</p> 
+
+		</div> <!-- mainCol -->			
+	</div> <!-- content -->
 	<#include "includes/bottom.ftl" />
 </body>
 </html>

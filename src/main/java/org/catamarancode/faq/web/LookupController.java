@@ -190,35 +190,29 @@ public class LookupController {
     
     @RequestMapping("/keywords.json")
     public ResponseEntity<String> keywords(HttpServletRequest request,
-            @RequestParam(required = false) String query) throws UnsupportedEncodingException {
+            @RequestParam(required = false) String query, @RequestParam(required = false) String canvas) throws UnsupportedEncodingException {
 
         // Logged in user?  If so show non-public FAQs
         String contextId = userContext.getEffectiveContextId(request);
         
         // Default to showing all faqs (TODO: paginate in the future)
-        List<Faq> faqs = solrService.listFaqs(contextId);        
+        List<Faq> faqs = null;      
+        if (query != null && StringUtils.hasText(query.trim()) && !query.equalsIgnoreCase("undefined")) {
+        	faqs = solrService.searchFaq(query, contextId);	
+        } else {
+        	faqs = solrService.listFaqs(contextId);
+        }        
         
         Set<String> keywords = FaqUtils.extractKeywords(faqs);
         
         JSONArray jsonArray = new JSONArray();
         for (String keyword : keywords) {
         	
-        	// Compute a font size based on word length range from min 3 to max 8
-        	int size = 2; // default
-        	
-        	if (keyword.length() < 4) {
-        		size = 8;
-        	} else if (keyword.length() < 6) {
-        		size = 7;
-        	} else if (keyword.length() < 9) {
-        		size = 6;
-        	} else if (keyword.length() < 11) {
-        		size = 5;
-        	} else if (keyword.length() < 16) {
-        		size = 4;
-        	} else if (keyword.length() < 22) {
-        		size = 3;
-        	}
+        	// Compute a font size 
+        	int size = this.computeFontSizeLarge(keyword);
+        	if (StringUtils.hasText(canvas) && canvas.equalsIgnoreCase("small")) {
+        		size = this.computeFontSizeSmall(keyword);
+        	}        	
         	
         	JSONObject jsonObject = new JSONObject();
         	jsonObject.put("word",  keyword);
@@ -230,6 +224,56 @@ public class LookupController {
         responseHeaders.set("Access-Control-Allow-Origin", "*");
         return new ResponseEntity<String>(jsonArray.toString(2), responseHeaders, HttpStatus.CREATED);        
     }
+    
+    /**
+     * Compute a font size based on word length range from min 2 to max 8
+     * @param keyword
+     * @return
+     */
+    private int computeFontSizeLarge(String keyword) {
+    	int size = 2; // default
+    	
+    	if (keyword.length() < 4) {
+    		size = 8;
+    	} else if (keyword.length() < 6) {
+    		size = 7;
+    	} else if (keyword.length() < 9) {
+    		size = 6;
+    	} else if (keyword.length() < 11) {
+    		size = 5;
+    	} else if (keyword.length() < 16) {
+    		size = 4;
+    	} else if (keyword.length() < 22) {
+    		size = 3;
+    	}
+    	
+    	return size;
+    }
+    
+    /**
+     * Compute a font size based on word length range from min 1 to max 3
+     * @param keyword
+     * @return
+     */
+    private int computeFontSizeSmall(String keyword) {
+    	int size = 1; // default
+    	
+    	if (keyword.length() < 4) {
+    		size = 3;
+    	} else if (keyword.length() < 6) {
+    		size = 3;
+    	} else if (keyword.length() < 9) {
+    		size = 2;
+    	} else if (keyword.length() < 11) {
+    		size = 2;
+    	} else if (keyword.length() < 16) {
+    		size = 1;
+    	} else if (keyword.length() < 22) {
+    		size = 1;
+    	}
+    	
+    	return size;
+    }   
     
     @RequestMapping("/something")
     public ResponseEntity<String> handle(HttpEntity<byte[]> requestEntity) throws UnsupportedEncodingException {
