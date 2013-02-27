@@ -29,7 +29,7 @@ public class BlogController {
 
 	// Live 24hrs
 	// Note pageCache is static because of @Scope("request") annotation.  Without that annotation the controller would be a singleton so it would not have to be static. 
-	private static final LRUCache<String, List<Page>> pageCache = new LRUCache<String, List<Page>>(200, 86400000);
+	private static LRUCache<String, List<Page>> pageCache = new LRUCache<String, List<Page>>(200, 86400000);
 	
 	@Autowired
 	private SolrService solrService;
@@ -41,8 +41,9 @@ public class BlogController {
 	private UserContext userContext;
 	
 	private Wordpress getWordpressClient() throws Exception {
+		// Note that www.scandilabs.com DNS is set statically on uprod. for some reason the DNS lookup fails..
 		Wordpress wp = new Wordpress("sladmin", "scandi12",
-				"http://wordpress.scandilabs.com/xmlrpc.php");
+				"http://www.scandilabs.com/blog/xmlrpc.php");
 		return wp;
 	}
 	
@@ -81,6 +82,14 @@ public class BlogController {
 		} else {
 			return null;
 		}		
+	}
+	
+	@RequestMapping("/blog-clear-cache")
+	public void blogClearCache(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+
+		pageCache = new LRUCache<String, List<Page>>(200, 86400000);
+		
 	}
 
 	@RequestMapping("/blog")

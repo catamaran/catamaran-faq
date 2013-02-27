@@ -26,7 +26,7 @@
 				                <li>
 				                    <a 
 				                        <#if (!page??)>class='current'</#if> 
-				                        href="/">
+				                        href="${javaSiteBase}/">
 				                        <h2>Java</h2>
 				                    </a>
 				                </li>   
