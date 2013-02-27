@@ -43,7 +43,7 @@ REMOTE_TOMCAT_WEBAPPS_DIR=/var/lib/tomcat7/javaslapps
 # -----------------------------------------------------------------------
 
 COMMAND=$1
-TARGET_SERVER=$2
+COMMAND_ARG_1=$2
 echo "CATAMARAN manage.sh: Running command '$COMMAND' .." 
 
 # initialize common variables
@@ -211,7 +211,7 @@ fi
 if [ "$COMMAND" == "deploy" ]; then
 
   # Validate command line parameters
-  if [ -z "$TARGET_SERVER" ]; then
+  if [ -z "$COMMAND_ARG_1" ]; then
     echo "CATAMARAN Please specify target server hostname (as you would specify a ssh/scp host)"
     exit 1
   fi  
@@ -231,15 +231,33 @@ if [ "$COMMAND" == "deploy" ]; then
   mvn compile war:war
 
   # Copy to remote
-  echo "CATAMARAN Copying war file to $TARGET_SERVER"
-  scp target/$ARTIFACT_ID-$VERSION.war $TARGET_SERVER:$REMOTE_TOMCAT_WEBAPPS_DIR/$REMOTE_WEBAPP_NAME.war
+  echo "CATAMARAN Copying war file to $COMMAND_ARG_1"
+  scp target/$ARTIFACT_ID-$VERSION.war $COMMAND_ARG_1:$REMOTE_TOMCAT_WEBAPPS_DIR/$REMOTE_WEBAPP_NAME.war
   
   echo "CATAMARAN manage.sh: Finished command $COMMAND" 
   exit 0  
 fi
 
+if [ "$COMMAND" == "install-jar" ]; then
+
+  # Validate command line parameters
+  if [ -z "$COMMAND_ARG_1" ]; then
+    echo "CATAMARAN Please specify jar file to install into local maven repository)"
+    exit 1
+  fi  
+
+  # Then build a war
+  echo "CATAMARAN Running 'mvn install:install-file ' .."
+  mvn install:install-file -D
+  # finish this later: http://ianibbo.blogspot.com/2009/04/google-apis-maven2-artifacts.html
+  # and http://javastack.blogspot.com/2009/11/adding-jar-to-local-file-system-maven2.html
+
+  echo "CATAMARAN manage.sh: Finished command $COMMAND" 
+  exit 0  
+fi
+
 # Command not recognized
-echo "Usage: manage.sh command [target_server]"
+echo "Usage: manage.sh command [arg1]"
 echo "Valid commands are:"
 echo "  run           (starts tomcat with visible log output and no remote debugger support)"
 echo "  rerun         (builds then starts tomcat with visible log output and no remote debugger support)"
@@ -249,7 +267,7 @@ echo "  restart       (stops, builds, then starts tomcat with remote debugger po
 echo "  build         (compiles java and builds webapp with local web symlinks)"
 echo "  clean         (removes local web symlinks and does maven clean which removes /target)"
 echo "  build-war     (compiles java, builds webapp with no symlinks)"
-echo "  deploy        (build-war, scp war to server)"
+echo "  deploy [srv]  (build-war, scp war to server)"
 echo "  status        (shows any running java processes matching current project name)"
 echo "  status-java   (shows all running java processes)"
 echo " "

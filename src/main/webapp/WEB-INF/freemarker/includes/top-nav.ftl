@@ -24,14 +24,16 @@
 				                    </a>
 				                </li>   
 				                <li>
-				                    <a class='current' 
+				                    <a 
+				                        <#if (!page??)>class='current'</#if> 
 				                        href="/">
 				                        <h2>Java</h2>
 				                    </a>
 				                </li>   
 				                <li>
 				                    <a 
-				                        href="${parentSiteBase}/blog">
+				                        <#if (page?? && page == "blog")>class='current'</#if>
+				                        href="${blogSiteBase}/blog">
 				                        <h2>Blog</h2>
 				                    </a>
 				                </li>   
