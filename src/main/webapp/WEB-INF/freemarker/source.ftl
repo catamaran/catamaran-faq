@@ -4,6 +4,8 @@
 
 <head>
 	<#include "includes/head.ftl" />
+	<script type="text/javascript" src="static/js/jquery-1.4.js"></script>
+    <script type="text/javascript" src="static/js/jquery.githubRepoWidget.js"></script>	
 </head>
 <body>
 	<#include "includes/top-nav.ftl" />
@@ -16,7 +18,14 @@
 
 
 			<h1 class="noTopMargin">Source</h1>
-			<p>The Java Web Framework source is open and available on <a href="https://github.com/catamaran" target="_blank">GitHub</a>.</p>
+			<h3>Web Framework</h3>			
+			<div class="github-widget" data-repo="catamaran/catamaran-framework"></div>
+			
+            <h3>Demo</h3>           
+            <div class="github-widget" data-repo="catamaran/catamaran-faq"></div>
+            
+            <p>For more information, see <a href="/faqs?query=git">keyword 'git'</a> and <a href="/faqs?query=github">keyword 'github'</a> in our knowledge base.
+            
 
 		</div> <!-- mainCol -->			
 	</div> <!-- content -->

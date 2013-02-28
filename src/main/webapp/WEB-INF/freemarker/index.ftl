@@ -21,7 +21,8 @@
 
 	
 	        <h1 class="noTopMargin">Rapid Web Development with Java</h1>
-	        <p>Catamaran Framework ties together best-practice Spring MVC, Hibernate, Tomcat, HTML/CSS, and jQuery in a ready-to-use framework, without sacrificing any of the power and flexibility of Java and related industry standard tools.</p>
+	        <p>Inspired by Ruby on Rails and Django/Python, it gets your app up and running fast while retaining the full power and flexibility of enterprise Java tools.</p>
+	        <p>Get started with our <a href="tutorial">tutorial</a> and create your first app in 30 minutes or less.</p> 
 		</div> <!-- mainCol -->
 		
 		
