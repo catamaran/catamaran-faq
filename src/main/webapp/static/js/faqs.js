@@ -45,7 +45,7 @@ $().ready(function() {
     
     var keyword = getQueryString()["query"];
     
-    $.getJSON('keywords.json?query=' + keyword + '&canvas=small', function(data) {
+    $.getJSON('keywords.json?&canvas=small', function(data) {
         
         for (var i = 0, ii = data.length, thisTag, groupId; i < ii; i++) {
             element = data[i];            

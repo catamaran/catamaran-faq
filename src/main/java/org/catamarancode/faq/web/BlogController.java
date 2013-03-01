@@ -47,13 +47,13 @@ public class BlogController {
 		return wp;
 	}
 	
-	private List<Page> getRecentPostsCached() throws Exception {
+	private List<Page> getRecentPostsCached(int number) throws Exception {
 		Wordpress wp = getWordpressClient();
-		String cacheKey = "recent200";
+		String cacheKey = "recent" + number;
 		List<Page> recentPosts = pageCache.get(cacheKey);
 		if (recentPosts == null) {
 			logger.debug("blog cache miss on " + cacheKey);
-			recentPosts = wp.getRecentPosts(200);
+			recentPosts = wp.getRecentPosts(number);
 			pageCache.put(cacheKey, recentPosts);
 		} else {
 			logger.debug("blog cache hit on " + cacheKey);
@@ -96,7 +96,7 @@ public class BlogController {
 	public ModelAndView blog(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
-		List<Page> recentPosts = getRecentPostsCached();
+		List<Page> recentPosts = getRecentPostsCached(10);
 
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("posts", recentPosts);
@@ -113,7 +113,7 @@ public class BlogController {
 		int id = Integer.parseInt(request.getParameter("id"));
 
 		Page post = this.getPostCached(id);		
-		List<Page> recentPosts = getRecentPostsCached();
+		List<Page> recentPosts = getRecentPostsCached(10);
 
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("posts", recentPosts);

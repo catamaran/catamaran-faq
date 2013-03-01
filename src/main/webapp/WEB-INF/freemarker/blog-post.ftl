@@ -23,10 +23,7 @@
 
 		<ul class="leftNav">
 		  <div style="padding-right: 26px;">
-			<h3 class="noTopMargin" style="-webkit-margin-before:0px"><a href="blog">Recent Posts</a></h3>
-			<#list posts as curPost>			
-			     <li><a <#if (curPost.postid == post.postid)>class='current' </#if> href="blog-post?id=${curPost.postid}">${curPost.title}</a></li>
-            </#list> 
+		      <li><a href="blog">Back</a></li>
 		  </div>	
 		</ul><div id="mainCol">
 			
