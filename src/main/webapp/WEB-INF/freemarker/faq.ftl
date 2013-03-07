@@ -5,8 +5,8 @@
 
 <head>
 	<#include "includes/head.ftl" />
-
-	<link type="text/css" rel="stylesheet" href="static/css/faq.css" media="screen, projection">
+    
+	<link type="text/css" rel="stylesheet" href="static/css/faqs.css" media="screen, projection">
 </head>
 <body>
 	<#include "includes/top-nav.ftl" />
@@ -34,7 +34,7 @@
 		    </#if>
 			
 			<h2 class="noTopMargin">${faq.question}</h2>
-			<div class="faq">		
+			<div class="singleFaq">		
 		        <div class="answerBox"><p>${faq.answerAsMarkdown}<p></div>
 		    </div>
 		    <div class="faqMeta">

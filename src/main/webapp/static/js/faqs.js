@@ -30,11 +30,13 @@ $().ready(function() {
     	//alert('ho=' + faqId);
      	if (answerVisible) {
      		$(answerParagraphSelector).html(null);
+     		$(answerParagraphSelector).hide();
      		plus.html('+');
      	} else {	
 	    	$.getJSON('faq.json?key=' + faqShortId, function(data) {
 	    		$(answerParagraphSelector).html('<p>' + data.answerAsMarkdown + '</p>');
 	    	});
+	    	$(answerParagraphSelector).show();
 	    	plus.html('-');
      	}
 	});
