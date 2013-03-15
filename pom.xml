@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.catamarancode.faq</groupId>
-  <artifactId>catamaran-faq</artifactId>
+  <groupId>com.scandilabs.java</groupId>
+  <artifactId>java-scandilabs-com</artifactId>
   <packaging>war</packaging>
-  <version>1.0</version>
+  <version>1.0.0</version>
   <name>Catamaran FAQ Management Web Application</name>
   <url>http://maven.apache.org</url>
   
@@ -23,21 +23,21 @@
     </dependency>
     
     <dependency>
-      <groupId>org.catamarancode</groupId>
-      <artifactId>catamaran-mvc</artifactId>
-      <version>1.1</version>
+      <groupId>com.scandilabs.framework</groupId>
+      <artifactId>scandilabs-mvc</artifactId>
+      <version>1.0.0</version>
     </dependency>
 	
     <dependency>
-      <groupId>org.catamarancode</groupId>
-      <artifactId>catamaran-core</artifactId>
-      <version>1.2-SNAPSHOT</version>
+      <groupId>com.scandilabs.framework</groupId>
+      <artifactId>scandilabs-core</artifactId>
+      <version>1.0.0</version>
     </dependency>
 	
 	<dependency>
-      <groupId>org.catamarancode</groupId>
-      <artifactId>catamaran-solr</artifactId>
-      <version>1.0</version>
+      <groupId>com.scandilabs.framework</groupId>
+      <artifactId>scandilabs-solr</artifactId>
+      <version>1.0.0</version>
     </dependency>
 	
 	<dependency>
