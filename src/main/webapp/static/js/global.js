@@ -10,3 +10,8 @@ function getQueryString() {
   return result;
 }
 	
+$().ready(function() {
+    /*
+    $('#footerContainer').load('http://localhost:8090/about #footerContainer');
+    */
+});
